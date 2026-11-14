@@ -241,7 +241,7 @@ function calIcon(kind,size){
   if(kind==="today")inner=dots([12,15,18]);
   else if(kind==="week")inner=dots([17]);
   else if(kind==="month")inner='<rect x="7" y="11.5" width="10" height="5.5" rx="1.5" fill="currentColor"/>';
-  else if(kind==="3months"){body='<rect x="3" y="4.5" width="18" height="16.5" rx="3" fill="currentColor"/>';inner='<text x="12" y="18.2" text-anchor="middle" font-size="10.5" font-weight="700" fill="#2b2c2f" style="font-family:'Roboto Condensed',Arial,sans-serif">3</text>';}
+  else if(kind==="3months"){body='<rect x="3" y="4.5" width="18" height="16.5" rx="3" fill="currentColor"/>';inner='<text x="12" y="18.2" text-anchor="middle" font-size="10.5" font-weight="700" fill="#2b2c2f" style="font-family:Roboto Condensed,Arial,sans-serif">3</text>';}
   else inner='<circle cx="12" cy="13.2" r="2" fill="currentColor"/><path d="M8.2 19c.3-2.2 1.8-3.3 3.8-3.3s3.5 1.1 3.8 3.3z" fill="currentColor"/>';
   return `<svg width="${size}" height="${size}" viewBox="0 0 24 24">${rings}${body}${inner}</svg>`;
 }
