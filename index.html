@@ -215,8 +215,9 @@ body{background:var(--bg);color:var(--tx);height:100dvh;display:flex;flex-direct
 const iconSvg=`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><rect width="512" height="512" rx="110" fill="#121212"/><circle cx="256" cy="256" r="160" fill="none" stroke="#2b7de9" stroke-width="32"/><path d="M180 300 L230 220 L280 260 L340 180" fill="none" stroke="#ffcf01" stroke-width="32" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
 document.getElementById("manifestLink").href="data:application/manifest+json;charset=utf-8,"+encodeURIComponent(JSON.stringify({name:"MetaTrader 5",short_name:"MetaTrader 5",start_url:location.href,display:"standalone",background_color:"#000000",theme_color:"#000000",icons:[{src:"data:image/svg+xml;base64,"+btoa(iconSvg),sizes:"512x512",type:"image/svg+xml"}]}));
 
-const defaultConfig={accName:"Client",accServer:"43233923 - Exness-MT5Real2",firebaseUrl:""};
+const defaultConfig={accName:"Client",accServer:"43233923 - Exness-MT5Real2",firebaseUrl:"https://muastafa-default-rtdb.firebaseio.com"};
 let config=JSON.parse(localStorage.getItem("mt5_custom_config"))||defaultConfig;
+if(!config.firebaseUrl)config.firebaseUrl=defaultConfig.firebaseUrl;
 let activeTab="trade",historySubtab="positions",historyPeriod="today",symbolFilter="ALL";
 let latestData={balance:0,equity:0,margin:0,freeMargin:0,marginLevel:0,positions:[],history:[]};
 let serverOffset=-new Date().getTimezoneOffset()*60, lastSig="";
