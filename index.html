@@ -126,7 +126,7 @@
     }
 
     .summary-section {
-      padding: 10px 14px 10px 14px;
+      padding: 10px 14px;
       border-bottom: 1px solid #17171a;
     }
 
@@ -181,8 +181,8 @@
     .history-subtab {
       flex: 1;
       text-align: center;
-      padding: 11px 0;
-      font-size: 12px;
+      padding: 14px 0;
+      font-size: 13px;
       font-weight: 600;
       letter-spacing: 0.4px;
       color: #8e8e93;
@@ -210,10 +210,10 @@
       position: fixed;
       top: 56px;
       right: 12px;
-      width: 255px;
+      width: 275px;
       background-color: var(--bg-menu);
-      border-radius: 10px;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.75);
+      border-radius: 12px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.85);
       z-index: 45;
       display: none;
       overflow: hidden;
@@ -228,7 +228,7 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 11px 14px;
+      padding: 12px 14px;
       border-bottom: 1px solid #2a2a2d;
       cursor: pointer;
     }
@@ -244,21 +244,21 @@
     }
 
     .period-icon-box {
-      width: 30px;
-      height: 30px;
+      width: 32px;
+      height: 32px;
       border-radius: 6px;
-      background-color: #3a3a3d;
+      background-color: #313135;
       display: flex;
       align-items: center;
       justify-content: center;
       color: #e5e5ea;
-      font-size: 12px;
+      font-size: 13px;
       font-weight: 700;
       flex-shrink: 0;
     }
 
     .period-title {
-      font-size: 14px;
+      font-size: 14.5px;
       font-weight: 500;
       color: var(--text-primary);
       line-height: 1.25;
@@ -273,7 +273,7 @@
 
     .period-check {
       color: #3a8ee6;
-      font-size: 16px;
+      font-size: 18px;
       font-weight: 700;
     }
 
@@ -686,7 +686,9 @@
   <div class="period-dropdown" id="periodDropdown">
     <div class="period-option" data-period="today" onclick="selectPeriod('today')">
       <div class="period-option-left">
-        <div class="period-icon-box">📅</div>
+        <div class="period-icon-box">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line><circle cx="8" cy="14" r="1" fill="currentColor"></circle><circle cx="12" cy="14" r="1" fill="currentColor"></circle><circle cx="16" cy="14" r="1" fill="currentColor"></circle><circle cx="8" cy="18" r="1" fill="currentColor"></circle><circle cx="12" cy="18" r="1" fill="currentColor"></circle></svg>
+        </div>
         <div>
           <div class="period-title">Today</div>
           <div class="period-dates" id="lblTodayDate">11/14/26</div>
@@ -697,7 +699,9 @@
 
     <div class="period-option" data-period="week" onclick="selectPeriod('week')">
       <div class="period-option-left">
-        <div class="period-icon-box">🗓</div>
+        <div class="period-icon-box">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+        </div>
         <div>
           <div class="period-title">Last week</div>
           <div class="period-dates" id="lblWeekDate">11/7/26 - 11/14/26</div>
@@ -708,7 +712,9 @@
 
     <div class="period-option" data-period="month" onclick="selectPeriod('month')">
       <div class="period-option-left">
-        <div class="period-icon-box">📆</div>
+        <div class="period-icon-box">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+        </div>
         <div>
           <div class="period-title">Last month</div>
           <div class="period-dates" id="lblMonthDate">10/14/26 - 11/14/26</div>
@@ -719,7 +725,7 @@
 
     <div class="period-option" data-period="3months" onclick="selectPeriod('3months')">
       <div class="period-option-left">
-        <div class="period-icon-box">3</div>
+        <div class="period-icon-box" style="font-size: 14px; font-weight: 800;">3</div>
         <div>
           <div class="period-title">Last 3 months</div>
           <div class="period-dates" id="lbl3MonthsDate">8/14/26 - 11/14/26</div>
@@ -730,7 +736,9 @@
 
     <div class="period-option" data-period="custom" onclick="selectPeriod('custom')">
       <div class="period-option-left">
-        <div class="period-icon-box">🕒</div>
+        <div class="period-icon-box">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"></circle><polyline points="12 7 12 12 15 15"></polyline></svg>
+        </div>
         <div>
           <div class="period-title">Custom period</div>
           <div class="period-dates" id="lblCustomDate">11/11/26 - 11/12/26</div>
@@ -798,7 +806,7 @@
         <span class="summary-value" id="histProfit">0.00</span>
       </div>
       <div class="summary-row">
-        <span class="summary-label">Deposit</span>
+        <span class="summary-label">Deposit:</span>
         <span class="summary-dots"></span>
         <span class="summary-value" id="histDeposit">0.00</span>
       </div>
@@ -888,35 +896,6 @@
           <span>Trade</span>
         </div>
       </div>
-      <div class="drawer-item" onclick="toggleDrawer(false)">
-        <div class="drawer-item-left">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-            <rect x="3" y="4" width="18" height="16" rx="2"></rect>
-            <line x1="7" y1="8" x2="17" y2="8"></line>
-            <line x1="7" y1="12" x2="17" y2="12"></line>
-          </svg>
-          <span>News</span>
-        </div>
-      </div>
-      <div class="drawer-item" onclick="toggleDrawer(false)">
-        <div class="drawer-item-left">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-            <rect x="2" y="4" width="20" height="16" rx="2"></rect>
-            <polyline points="22,6 12,13 2,6"></polyline>
-          </svg>
-          <span>Mailbox</span>
-        </div>
-        <span class="mail-badge">7</span>
-      </div>
-      <div class="drawer-item" onclick="toggleDrawer(false)">
-        <div class="drawer-item-left">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-            <rect x="4" y="3" width="16" height="18" rx="2"></rect>
-            <line x1="8" y1="8" x2="16" y2="8"></line>
-          </svg>
-          <span>Journal</span>
-        </div>
-      </div>
       <div class="drawer-item" onclick="openSettings()">
         <div class="drawer-item-left">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
@@ -924,56 +903,6 @@
             <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
           </svg>
           <span>Settings</span>
-        </div>
-      </div>
-      <div class="drawer-item" onclick="toggleDrawer(false)">
-        <div class="drawer-item-left">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-            <rect x="3" y="4" width="18" height="18" rx="2"></rect>
-            <line x1="16" y1="2" x2="16" y2="6"></line>
-            <line x1="8" y1="2" x2="8" y2="6"></line>
-          </svg>
-          <span>Economic calendar</span>
-        </div>
-        <span class="ads-pill">Ads</span>
-      </div>
-      <div class="drawer-item" onclick="toggleDrawer(false)">
-        <div class="drawer-item-left">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-            <circle cx="9" cy="7" r="3"></circle>
-            <circle cx="16" cy="11" r="2.5"></circle>
-            <path d="M4 19a5 5 0 0 1 10 0"></path>
-          </svg>
-          <span>Traders Community</span>
-        </div>
-      </div>
-      <div class="drawer-item" onclick="toggleDrawer(false)">
-        <div class="drawer-item-left">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-            <line x1="22" y1="2" x2="11" y2="13"></line>
-            <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
-          </svg>
-          <span>MQL5 Algo Trading</span>
-        </div>
-      </div>
-      <div class="drawer-item" onclick="toggleDrawer(false)">
-        <div class="drawer-item-left">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-            <circle cx="12" cy="12" r="9"></circle>
-            <path d="M9.5 9a2.5 2.5 0 0 1 4.5 1.5c0 1.5-2 2-2 3.5"></path>
-            <circle cx="12" cy="17" r="1" fill="currentColor"></circle>
-          </svg>
-          <span>User guide</span>
-        </div>
-      </div>
-      <div class="drawer-item" onclick="toggleDrawer(false)">
-        <div class="drawer-item-left">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-            <circle cx="12" cy="12" r="9"></circle>
-            <line x1="12" y1="11" x2="12" y2="16"></line>
-            <circle cx="12" cy="8" r="1" fill="currentColor"></circle>
-          </svg>
-          <span>About</span>
         </div>
       </div>
     </div>
@@ -1035,7 +964,7 @@
     const defaultConfig = {
       accName: "Client",
       accServer: "43233923 - Exness-MT5Real2",
-      firebaseUrl: ""
+      firebaseUrl: "https://muastafa-default-rtdb.firebaseio.com"
     };
 
     let config = JSON.parse(localStorage.getItem("mt5_custom_config")) || defaultConfig;
@@ -1354,7 +1283,7 @@
             <div class="pos-right-col">
               <div class="pos-time">${timeText}</div>
               <div class="pos-right ${isPos ? "profit-pos" : "profit-neg"}">
-                ${rowVal.toFixed(2)}
+                ${rowVal >= 0 ? formatNum(rowVal) : '-' + formatNum(Math.abs(rowVal))}
               </div>
             </div>
           </div>
