@@ -44,7 +44,7 @@
 
     .topbar {
       height: 56px;
-      padding: 0 16px;
+      padding: 0 14px;
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -55,7 +55,7 @@
     .topbar-left {
       display: flex;
       align-items: center;
-      gap: 18px;
+      gap: 16px;
     }
 
     .menu-btn {
@@ -87,9 +87,9 @@
     }
 
     .title-sub-muted {
-      font-size: 13px;
+      font-size: 13.5px;
       font-weight: 400;
-      color: var(--text-secondary);
+      color: #9a9aa0;
       line-height: 1.2;
     }
 
@@ -126,15 +126,20 @@
     }
 
     .summary-section {
-      padding: 8px 16px 12px 16px;
+      padding: 10px 14px 10px 14px;
+      border-bottom: 1px solid #17171a;
     }
 
     .summary-row {
       display: flex;
       align-items: baseline;
       justify-content: space-between;
-      margin-bottom: 8px;
-      font-size: 14.5px;
+      margin-bottom: 7px;
+      font-size: 14px;
+    }
+
+    .summary-row:last-child {
+      margin-bottom: 0;
     }
 
     .summary-label {
@@ -158,7 +163,7 @@
 
     .section-header {
       background-color: #161618;
-      padding: 7px 16px;
+      padding: 7px 14px;
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -169,7 +174,7 @@
 
     .history-subtabs {
       display: flex;
-      border-bottom: 1px solid #1c1c1e;
+      border-bottom: 1px solid #1b1b1e;
       background-color: var(--bg-black);
     }
 
@@ -177,10 +182,10 @@
       flex: 1;
       text-align: center;
       padding: 11px 0;
-      font-size: 12.5px;
+      font-size: 12px;
       font-weight: 600;
       letter-spacing: 0.4px;
-      color: var(--text-secondary);
+      color: #8e8e93;
       border-bottom: 2px solid transparent;
       cursor: pointer;
     }
@@ -296,26 +301,27 @@
     }
 
     .empty-history {
-      padding: 72px 20px 36px 20px;
+      padding: 86px 20px 36px 20px;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      gap: 14px;
-      color: #636366;
+      gap: 12px;
+      color: #555558;
     }
 
     .empty-history-text {
-      font-size: 14.5px;
+      font-size: 14px;
       color: #8e8e93;
     }
 
     .position-item {
-      padding: 10px 16px;
-      border-bottom: 1px solid var(--border-color);
+      padding: 10px 14px;
+      border-bottom: 1px solid #18181b;
       display: flex;
-      align-items: center;
+      align-items: flex-start;
       justify-content: space-between;
+      gap: 10px;
     }
 
     .pos-left {
@@ -325,22 +331,36 @@
     }
 
     .pos-top {
-      font-size: 15px;
+      font-size: 14.5px;
       font-weight: 600;
       color: var(--text-primary);
     }
 
-    .pos-type-buy { color: var(--blue-profit); font-weight: 500; }
-    .pos-type-sell { color: var(--red-loss); font-weight: 500; }
+    .pos-type-buy { color: var(--blue-profit); font-weight: 600; }
+    .pos-type-sell { color: var(--red-loss); font-weight: 600; }
 
     .pos-prices {
-      font-size: 13.5px;
-      color: var(--text-secondary);
+      font-size: 13px;
+      color: #9a9aa0;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .pos-right-col {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 3px;
+      flex-shrink: 0;
+    }
+
+    .pos-time {
+      font-size: 12px;
+      color: #9a9aa0;
       font-variant-numeric: tabular-nums;
     }
 
     .pos-right {
-      font-size: 15.5px;
+      font-size: 15px;
       font-weight: 600;
       font-variant-numeric: tabular-nums;
     }
@@ -637,6 +657,13 @@
     </div>
 
     <div class="topbar-actions" id="historyActions" style="display: none;">
+      <button class="icon-btn" title="Summary" onclick="scrollHistoryToSummary()">
+        <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+          <path d="M21 12a9 9 0 1 1-2.64-6.36"></path>
+          <polyline points="21 3 21 9 15 9"></polyline>
+          <text x="12" y="15.5" text-anchor="middle" font-size="9.5" font-weight="700" fill="currentColor" stroke="none">$</text>
+        </svg>
+      </button>
       <button class="icon-btn" title="Filter by Symbol" onclick="openSymbolFilter()">
         <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
           <path d="M7 20V4M7 4L3 8M7 4L11 8"></path>
@@ -755,6 +782,7 @@
   <section class="content" id="historyView">
     <div class="history-subtabs">
       <div class="history-subtab active" id="subtabPositions" onclick="setHistorySubtab('positions')">POSITIONS</div>
+      <div class="history-subtab" id="subtabOrders" onclick="setHistorySubtab('orders')">ORDERS</div>
       <div class="history-subtab" id="subtabDeals" onclick="setHistorySubtab('deals')">DEALS</div>
     </div>
 
@@ -763,8 +791,6 @@
       <input type="date" id="inpToDate" value="2026-11-12" onchange="onCustomDateChange()" />
     </div>
 
-    <div id="historyList"></div>
-
     <div class="summary-section" id="historySummarySection" style="display:none;">
       <div class="summary-row">
         <span class="summary-label">Profit:</span>
@@ -772,14 +798,9 @@
         <span class="summary-value" id="histProfit">0.00</span>
       </div>
       <div class="summary-row">
-        <span class="summary-label">Deposit:</span>
+        <span class="summary-label">Deposit</span>
         <span class="summary-dots"></span>
         <span class="summary-value" id="histDeposit">0.00</span>
-      </div>
-      <div class="summary-row">
-        <span class="summary-label">Withdrawal:</span>
-        <span class="summary-dots"></span>
-        <span class="summary-value" id="histWithdrawal">0.00</span>
       </div>
       <div class="summary-row">
         <span class="summary-label">Swap:</span>
@@ -797,6 +818,8 @@
         <span class="summary-value" id="histBalance">0.00</span>
       </div>
     </div>
+
+    <div id="historyList"></div>
   </section>
 
   <!-- Bottom Navigation -->
@@ -1127,8 +1150,16 @@
     function setHistorySubtab(sub) {
       historySubtab = sub;
       document.getElementById("subtabPositions").classList.toggle("active", sub === "positions");
+      document.getElementById("subtabOrders").classList.toggle("active", sub === "orders");
       document.getElementById("subtabDeals").classList.toggle("active", sub === "deals");
       renderHistory(latestData);
+    }
+
+    function scrollHistoryToSummary() {
+      const el = document.getElementById("historySummarySection");
+      if (el && el.style.display !== "none") {
+        el.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
     }
 
     function openSymbolFilter() {
@@ -1194,12 +1225,21 @@
       }).replace(/,/g, " ");
     }
 
-    function formatDealTime(ts) {
+    function formatPriceSpaced(val, digits) {
+      const fixed = Number(val || 0).toFixed(digits);
+      const parts = fixed.split(".");
+      parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, " ");
+      return parts.join(".");
+    }
+
+    function formatDealTime(d) {
+      if (d.timeStr) return String(d.timeStr);
+      const ts = Number(d.time || 0);
       if (!ts) return "";
-      const d = new Date(Number(ts) * 1000);
-      if (isNaN(d.getTime())) return "";
+      const dt = new Date(ts * 1000);
+      if (isNaN(dt.getTime())) return "";
       const pad = (n) => String(n).padStart(2, "0");
-      return `${d.getFullYear()}.${pad(d.getMonth() + 1)}.${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
+      return `${dt.getFullYear()}.${pad(dt.getMonth() + 1)}.${pad(dt.getDate())} ${pad(dt.getHours())}:${pad(dt.getMinutes())}:${pad(dt.getSeconds())}`;
     }
 
     function filterDeals(deals) {
@@ -1244,7 +1284,7 @@
         summaryEl.style.display = "none";
         listEl.innerHTML = `
           <div class="empty-history">
-            <svg width="68" height="68" viewBox="0 0 64 64" fill="#48484a">
+            <svg width="72" height="72" viewBox="0 0 64 64" fill="#48484a">
               <path d="M12 10h40l6 16v26a4 4 0 0 1-4 4H10a4 4 0 0 1-4-4V26l6-16zm8 20v6h24v-6H20z"/>
             </svg>
             <div class="empty-history-text">Empty history</div>
@@ -1257,7 +1297,6 @@
 
       let profitSum = 0;
       let depositSum = 0;
-      let withdrawalSum = 0;
       let swapSum = 0;
       let commissionSum = 0;
 
@@ -1268,8 +1307,7 @@
         const cm = Number(d.commission || 0);
 
         if (typeStr === "balance") {
-          if (p >= 0) depositSum += p;
-          else withdrawalSum += p;
+          depositSum += p;
         } else {
           profitSum += p;
           swapSum += sw;
@@ -1277,14 +1315,13 @@
         }
       });
 
-      const netBalanceChange = profitSum + depositSum + withdrawalSum + swapSum + commissionSum;
+      const netBalanceChange = profitSum + depositSum + swapSum + commissionSum;
 
       const elProfit = document.getElementById("histProfit");
       elProfit.textContent = formatNum(profitSum);
       elProfit.className = `summary-value ${profitSum < 0 ? "profit-neg" : "profit-pos"}`;
 
       document.getElementById("histDeposit").textContent = formatNum(depositSum);
-      document.getElementById("histWithdrawal").textContent = formatNum(withdrawalSum);
       document.getElementById("histSwap").textContent = formatNum(swapSum);
       document.getElementById("histCommission").textContent = formatNum(commissionSum);
       document.getElementById("histBalance").textContent = formatNum(netBalanceChange);
@@ -1295,24 +1332,30 @@
         const rowVal = isBalance ? Number(d.profit ?? d.total ?? 0) : Number(d.total ?? d.profit ?? 0);
         const isPos = rowVal >= 0;
         const digits = Number(d.digits ?? 2);
-        const timeText = formatDealTime(d.time);
+        const timeText = formatDealTime(d);
+
+        const openP = d.openPrice != null ? d.openPrice : d.price;
+        const closeP = d.closePrice != null ? d.closePrice : d.price;
 
         const titlePart = isBalance
           ? (rowVal >= 0 ? "Balance (Deposit)" : "Balance (Withdrawal)")
           : `${d.symbol}, <span class="${typeStr === "buy" ? "pos-type-buy" : "pos-type-sell"}">${typeStr} ${Number(d.volume || 0).toFixed(2)}</span>`;
 
         const subPart = isBalance
-          ? timeText
-          : `${Number(d.price || 0).toFixed(digits)}${timeText ? " • " + timeText : ""}`;
+          ? ""
+          : `${formatPriceSpaced(openP, digits)} → ${formatPriceSpaced(closeP, digits)}`;
 
         return `
           <div class="position-item">
             <div class="pos-left">
               <div class="pos-top">${titlePart}</div>
-              <div class="pos-prices">${subPart}</div>
+              ${subPart ? `<div class="pos-prices">${subPart}</div>` : ""}
             </div>
-            <div class="pos-right ${isPos ? "profit-pos" : "profit-neg"}">
-              ${rowVal.toFixed(2)}
+            <div class="pos-right-col">
+              <div class="pos-time">${timeText}</div>
+              <div class="pos-right ${isPos ? "profit-pos" : "profit-neg"}">
+                ${rowVal.toFixed(2)}
+              </div>
             </div>
           </div>
         `;
@@ -1369,7 +1412,7 @@
                 <div class="pos-top">
                   ${p.symbol}, <span class="${isBuy ? 'pos-type-buy' : 'pos-type-sell'}">${p.type} ${Number(p.volume).toFixed(2)}</span>
                 </div>
-                <div class="pos-prices">${Number(p.openPrice).toFixed(d)} → ${Number(p.currentPrice).toFixed(d)}</div>
+                <div class="pos-prices">${formatPriceSpaced(p.openPrice, d)} → ${formatPriceSpaced(p.currentPrice, d)}</div>
               </div>
               <div class="pos-right ${isPos ? 'profit-pos' : 'profit-neg'}">
                 ${Number(p.profit).toFixed(2)}
