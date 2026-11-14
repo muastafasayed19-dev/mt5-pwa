@@ -109,6 +109,62 @@
       flex: 1;
       overflow-y: auto;
       padding-bottom: 16px;
+      display: none;
+    }
+
+    .content.active {
+      display: block;
+    }
+
+    #chartView.active {
+      display: flex;
+      flex-direction: column;
+      padding-bottom: 0;
+      overflow: hidden;
+    }
+
+    .chart-meta {
+      padding: 6px 14px;
+      background-color: #101012;
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 13px;
+      color: var(--text-secondary);
+      flex-shrink: 0;
+    }
+
+    .chart-symbol {
+      color: var(--text-primary);
+      font-weight: 600;
+    }
+
+    .chart-canvas-wrap {
+      flex: 1;
+      position: relative;
+      width: 100%;
+      min-height: 220px;
+      background-color: #000000;
+    }
+
+    #mt5ChartCanvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    .chart-empty {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-secondary);
+      font-size: 13.5px;
+      text-align: center;
+      padding: 20px;
+      pointer-events: none;
     }
 
     .summary-section {
@@ -449,7 +505,7 @@
         </svg>
       </button>
       <div class="title-group">
-        <span class="title-main">Trade</span>
+        <span class="title-main" id="headerTitle">Trade</span>
         <span id="topProfit" class="title-sub profit-pos">0.00 USD</span>
       </div>
     </div>
@@ -478,8 +534,8 @@
     </div>
   </header>
 
-  <!-- Main Content -->
-  <main class="content" id="mainContent">
+  <!-- Trade View -->
+  <main class="content active" id="tradeView">
     <div class="summary-section">
       <div class="summary-row">
         <span class="summary-label">Balance:</span>
@@ -516,16 +572,28 @@
     <div id="positionsList"></div>
   </main>
 
+  <!-- Charts View -->
+  <section class="content" id="chartView">
+    <div class="chart-meta">
+      <div><span class="chart-symbol" id="chartSymTf">--</span></div>
+      <div id="chartBidAsk">--</div>
+    </div>
+    <div class="chart-canvas-wrap">
+      <canvas id="mt5ChartCanvas"></canvas>
+      <div class="chart-empty" id="chartEmptyMsg">Waiting for chart candles from MT5...</div>
+    </div>
+  </section>
+
   <!-- Bottom Navigation -->
   <nav class="bottom-nav">
-    <div class="nav-item">
+    <div class="nav-item" id="navQuotes" onclick="switchTab('trade')">
       <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
         <path d="M7 20V4M7 4L3 8M7 4L11 8M17 4V20M17 20L13 16M17 20L21 16"></path>
       </svg>
       <span>Quotes</span>
     </div>
-    <div class="nav-item">
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+    <div class="nav-item" id="navCharts" onclick="switchTab('charts')">
+      <svg id="iconCharts" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
         <rect x="5" y="6" width="4" height="10"></rect>
         <line x1="7" y1="2" x2="7" y2="6"></line>
         <line x1="7" y1="16" x2="7" y2="21"></line>
@@ -535,8 +603,8 @@
       </svg>
       <span>Charts</span>
     </div>
-    <div class="nav-item active">
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#2b7de9" stroke-width="2">
+    <div class="nav-item active" id="navTrade" onclick="switchTab('trade')">
+      <svg id="iconTrade" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#2b7de9" stroke-width="2">
         <polyline points="3 17 9 11 13 15 21 7"></polyline>
         <circle cx="3" cy="17" r="1.5" fill="#2b7de9"></circle>
         <circle cx="9" cy="11" r="1.5" fill="#2b7de9"></circle>
@@ -545,14 +613,14 @@
       </svg>
       <span id="navProfitPill" class="nav-badge-pill">0.00</span>
     </div>
-    <div class="nav-item">
+    <div class="nav-item" id="navHistory" onclick="switchTab('trade')">
       <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
         <circle cx="12" cy="12" r="9"></circle>
         <polyline points="12 7 12 12 15 15"></polyline>
       </svg>
       <span>History</span>
     </div>
-    <div class="nav-item">
+    <div class="nav-item" id="navMessages" onclick="switchTab('trade')">
       <span class="msg-badge">2</span>
       <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
         <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
@@ -574,12 +642,25 @@
     </div>
 
     <div class="drawer-menu">
-      <div class="drawer-item active" onclick="toggleDrawer(false)">
+      <div class="drawer-item active" onclick="switchTab('trade'); toggleDrawer(false)">
         <div class="drawer-item-left">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <polyline points="3 17 9 11 13 15 21 7"></polyline>
           </svg>
           <span>Trade</span>
+        </div>
+      </div>
+      <div class="drawer-item" onclick="switchTab('charts'); toggleDrawer(false)">
+        <div class="drawer-item-left">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+            <rect x="5" y="6" width="4" height="10"></rect>
+            <line x1="7" y1="2" x2="7" y2="6"></line>
+            <line x1="7" y1="16" x2="7" y2="21"></line>
+            <rect x="15" y="9" width="4" height="9"></rect>
+            <line x1="17" y1="4" x2="17" y2="9"></line>
+            <line x1="17" y1="18" x2="17" y2="22"></line>
+          </svg>
+          <span>Charts</span>
         </div>
       </div>
       <div class="drawer-item" onclick="toggleDrawer(false)">
@@ -660,7 +741,6 @@
   </div>
 
   <script>
-    // Inline Fullscreen PWA Manifest & Icon
     const iconSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><rect width="512" height="512" rx="110" fill="#121212"/><circle cx="256" cy="256" r="160" fill="none" stroke="#2b7de9" stroke-width="32"/><path d="M180 300 L230 220 L280 260 L340 180" fill="none" stroke="#ffcf01" stroke-width="32" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
     const iconUrl = "data:image/svg+xml;base64," + btoa(iconSvg);
     const manifestObj = {
@@ -681,6 +761,28 @@
     };
 
     let config = JSON.parse(localStorage.getItem("mt5_custom_config")) || defaultConfig;
+    let activeTab = "trade";
+    let latestData = { balance: 0, equity: 0, margin: 0, freeMargin: 0, marginLevel: 0, positions: [], candles: [], chart: null };
+
+    function switchTab(tab) {
+      activeTab = tab;
+      const isCharts = tab === "charts";
+
+      document.getElementById("tradeView").classList.toggle("active", !isCharts);
+      document.getElementById("chartView").classList.toggle("active", isCharts);
+      document.getElementById("headerTitle").textContent = isCharts ? "Charts" : "Trade";
+
+      document.getElementById("navTrade").classList.toggle("active", !isCharts);
+      document.getElementById("navCharts").classList.toggle("active", isCharts);
+
+      document.getElementById("iconTrade").setAttribute("stroke", !isCharts ? "#2b7de9" : "currentColor");
+      document.querySelectorAll("#iconTrade circle").forEach(c => c.setAttribute("fill", !isCharts ? "#2b7de9" : "none"));
+      document.getElementById("iconCharts").setAttribute("stroke", isCharts ? "#2b7de9" : "currentColor");
+
+      if (isCharts) {
+        setTimeout(() => drawChart(latestData), 30);
+      }
+    }
 
     function applyConfig() {
       document.getElementById("drawerAccName").textContent = config.accName;
@@ -720,7 +822,150 @@
       }).replace(/,/g, " ");
     }
 
+    function drawChart(data) {
+      const canvas = document.getElementById("mt5ChartCanvas");
+      const emptyMsg = document.getElementById("chartEmptyMsg");
+      const candles = Array.isArray(data.candles) ? data.candles : [];
+      const chartInfo = data.chart || {};
+      const digits = Number(chartInfo.digits ?? 2);
+
+      document.getElementById("chartSymTf").textContent =
+        chartInfo.symbol ? `${chartInfo.symbol}, ${chartInfo.timeframe || ""}` : "--";
+      document.getElementById("chartBidAsk").textContent =
+        (chartInfo.bid != null) ? `Bid: ${Number(chartInfo.bid).toFixed(digits)} | Ask: ${Number(chartInfo.ask ?? chartInfo.bid).toFixed(digits)}` : "--";
+
+      if (candles.length === 0) {
+        emptyMsg.style.display = "flex";
+        return;
+      }
+      emptyMsg.style.display = "none";
+
+      const rect = canvas.parentElement.getBoundingClientRect();
+      const dpr = window.devicePixelRatio || 1;
+      const w = Math.max(100, Math.floor(rect.width));
+      const h = Math.max(100, Math.floor(rect.height));
+      canvas.width = w * dpr;
+      canvas.height = h * dpr;
+
+      const ctx = canvas.getContext("2d");
+      ctx.scale(dpr, dpr);
+      ctx.clearRect(0, 0, w, h);
+
+      const rightAxisW = 64;
+      const padTop = 14;
+      const padBottom = 18;
+      const plotW = Math.max(40, w - rightAxisW);
+      const plotH = Math.max(40, h - padTop - padBottom);
+
+      const symPositions = (data.positions || []).filter(p =>
+        !chartInfo.symbol || String(p.symbol).toLowerCase() === String(chartInfo.symbol).toLowerCase()
+      );
+
+      let minP = Infinity, maxP = -Infinity;
+      candles.forEach(c => {
+        if (Number(c.l) < minP) minP = Number(c.l);
+        if (Number(c.h) > maxP) maxP = Number(c.h);
+      });
+      symPositions.forEach(p => {
+        const op = Number(p.openPrice);
+        if (!isNaN(op)) {
+          if (op < minP) minP = op;
+          if (op > maxP) maxP = op;
+        }
+      });
+
+      if (!isFinite(minP) || !isFinite(maxP) || minP === maxP) return;
+      const span = (maxP - minP) * 0.08 || 0.0001;
+      minP -= span;
+      maxP += span;
+
+      const priceToY = (price) => padTop + (1 - (price - minP) / (maxP - minP)) * plotH;
+
+      // Grid lines & right price scale
+      ctx.strokeStyle = "#18181b";
+      ctx.lineWidth = 1;
+      ctx.fillStyle = "#8e8e93";
+      ctx.font = "11px -apple-system, sans-serif";
+      ctx.textAlign = "left";
+      ctx.textBaseline = "middle";
+
+      const steps = 5;
+      for (let i = 0; i <= steps; i++) {
+        const ratio = i / steps;
+        const price = maxP - ratio * (maxP - minP);
+        const y = padTop + ratio * plotH;
+        ctx.beginPath();
+        ctx.moveTo(0, y);
+        ctx.lineTo(plotW, y);
+        ctx.stroke();
+        ctx.fillText(price.toFixed(digits), plotW + 5, y);
+      }
+
+      // Draw Candlesticks
+      const slotW = plotW / candles.length;
+      const bodyW = Math.max(2, Math.min(10, slotW * 0.65));
+
+      candles.forEach((c, idx) => {
+        const xCenter = idx * slotW + slotW / 2;
+        const o = Number(c.o), hP = Number(c.h), lP = Number(c.l), cl = Number(c.c);
+        const isBull = cl >= o;
+        const color = isBull ? "#2b7de9" : "#e5484d";
+
+        const yHigh = priceToY(hP);
+        const yLow = priceToY(lP);
+        const yOpen = priceToY(o);
+        const yClose = priceToY(cl);
+
+        ctx.strokeStyle = color;
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.moveTo(xCenter, yHigh);
+        ctx.lineTo(xCenter, yLow);
+        ctx.stroke();
+
+        const topY = Math.min(yOpen, yClose);
+        const boxH = Math.max(1.5, Math.abs(yClose - yOpen));
+        ctx.fillStyle = color;
+        ctx.fillRect(xCenter - bodyW / 2, topY, bodyW, boxH);
+      });
+
+      // Draw Open Positions lines on chart
+      symPositions.forEach(p => {
+        const op = Number(p.openPrice);
+        if (isNaN(op)) return;
+        const y = priceToY(op);
+        if (y < padTop || y > padTop + plotH) return;
+
+        const isBuy = String(p.type).toLowerCase() === "buy";
+        const lineColor = isBuy ? "#2b7de9" : "#e5484d";
+
+        ctx.save();
+        ctx.setLineDash([4, 3]);
+        ctx.strokeStyle = lineColor;
+        ctx.lineWidth = 1.2;
+        ctx.beginPath();
+        ctx.moveTo(0, y);
+        ctx.lineTo(plotW, y);
+        ctx.stroke();
+        ctx.restore();
+
+        const label = `${isBuy ? "BUY" : "SELL"} ${Number(p.volume).toFixed(2)} (${op.toFixed(digits)})`;
+        ctx.font = "bold 10.5px -apple-system, sans-serif";
+        const textW = ctx.measureText(label).width + 10;
+        const boxX = 6;
+        const boxY = Math.max(padTop, Math.min(padTop + plotH - 18, y - 16));
+
+        ctx.fillStyle = lineColor;
+        ctx.fillRect(boxX, boxY, textW, 15);
+        ctx.fillStyle = "#ffffff";
+        ctx.textAlign = "left";
+        ctx.textBaseline = "middle";
+        ctx.fillText(label, boxX + 5, boxY + 7.5);
+      });
+    }
+
     function renderData(data) {
+      latestData = data;
       const balance = Number(data.balance || 0);
       const equity = Number(data.equity || 0);
       const margin = Number(data.margin || 0);
@@ -763,15 +1008,16 @@
         rowMargin.style.display = "flex";
         rowMarginLevel.style.display = "flex";
         listEl.innerHTML = positions.map(p => {
-          const isBuy = p.type.toLowerCase() === "buy";
+          const isBuy = String(p.type).toLowerCase() === "buy";
           const isPos = Number(p.profit) >= 0;
+          const d = Number(p.digits ?? 2);
           return `
             <div class="position-item">
               <div class="pos-left">
                 <div class="pos-top">
-                  ${p.symbol}, <span class="${isBuy ? 'pos-type-buy' : 'pos-type-sell'}">${p.type} ${p.volume}</span>
+                  ${p.symbol}, <span class="${isBuy ? 'pos-type-buy' : 'pos-type-sell'}">${p.type} ${Number(p.volume).toFixed(2)}</span>
                 </div>
-                <div class="pos-prices">${p.openPrice} → ${p.currentPrice}</div>
+                <div class="pos-prices">${Number(p.openPrice).toFixed(d)} → ${Number(p.currentPrice).toFixed(d)}</div>
               </div>
               <div class="pos-right ${isPos ? 'profit-pos' : 'profit-neg'}">
                 ${Number(p.profit).toFixed(2)}
@@ -779,6 +1025,10 @@
             </div>
           `;
         }).join("");
+      }
+
+      if (activeTab === "charts") {
+        drawChart(data);
       }
     }
 
@@ -793,8 +1043,12 @@
       } catch (e) {}
     }
 
+    window.addEventListener("resize", () => {
+      if (activeTab === "charts") drawChart(latestData);
+    });
+
     applyConfig();
-    renderData({ balance: 0, equity: 0, margin: 0, freeMargin: 0, marginLevel: 0, positions: [] });
+    renderData({ balance: 0, equity: 0, margin: 0, freeMargin: 0, marginLevel: 0, positions: [], candles: [] });
     setInterval(fetchLiveData, 1000);
   </script>
 </body>
