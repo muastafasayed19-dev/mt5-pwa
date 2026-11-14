@@ -1,1376 +1,431 @@
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <meta name="theme-color" content="#000000" />
-  <meta name="mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-  <title>MetaTrader 5</title>
-  <link id="manifestLink" rel="manifest" />
-  <style>
-    :root {
-      --bg-black: #000000;
-      --bg-surface: #121212;
-      --bg-menu: #1e1e20;
-      --bg-drawer: #0d0d0f;
-      --bg-pill: #232325;
-      --text-primary: #ffffff;
-      --text-secondary: #8e8e93;
-      --blue-profit: #2b7de9;
-      --red-loss: #e5484d;
-      --border-color: #1c1c1e;
-      --exness-yellow: #ffcf01;
-    }
-
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-      -webkit-tap-highlight-color: transparent;
-      user-select: none;
-    }
-
-    body {
-      background-color: var(--bg-black);
-      color: var(--text-primary);
-      height: 100dvh;
-      display: flex;
-      flex-direction: column;
-      overflow: hidden;
-    }
-
-    .topbar {
-      height: 56px;
-      padding: 0 14px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      background-color: var(--bg-black);
-      flex-shrink: 0;
-    }
-
-    .topbar-left {
-      display: flex;
-      align-items: center;
-      gap: 16px;
-    }
-
-    .menu-btn {
-      background: none;
-      border: none;
-      color: var(--text-primary);
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      padding: 4px;
-    }
-
-    .title-group {
-      display: flex;
-      flex-direction: column;
-    }
-
-    .title-main {
-      font-size: 16px;
-      font-weight: 500;
-      color: var(--text-primary);
-      line-height: 1.2;
-    }
-
-    .title-sub {
-      font-size: 15px;
-      font-weight: 600;
-      line-height: 1.2;
-    }
-
-    .title-sub-muted {
-      font-size: 13.5px;
-      font-weight: 400;
-      color: #9a9aa0;
-      line-height: 1.2;
-    }
-
-    .profit-pos { color: var(--blue-profit); }
-    .profit-neg { color: var(--red-loss); }
-
-    .topbar-actions {
-      display: flex;
-      align-items: center;
-      gap: 18px;
-    }
-
-    .icon-btn {
-      background: none;
-      border: none;
-      color: var(--text-primary);
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 4px;
-    }
-
-    .content {
-      flex: 1;
-      overflow-y: auto;
-      padding-bottom: 16px;
-      display: none;
-      position: relative;
-    }
-
-    .content.active {
-      display: block;
-    }
-
-    .summary-section {
-      padding: 10px 14px;
-      border-bottom: 1px solid #17171a;
-    }
-
-    .summary-row {
-      display: flex;
-      align-items: baseline;
-      justify-content: space-between;
-      margin-bottom: 7px;
-      font-size: 14px;
-    }
-
-    .summary-row:last-child {
-      margin-bottom: 0;
-    }
-
-    .summary-label {
-      color: var(--text-primary);
-      font-weight: 500;
-      white-space: nowrap;
-    }
-
-    .summary-dots {
-      flex: 1;
-      border-bottom: 1.5px dotted #2c2c2e;
-      margin: 0 8px;
-    }
-
-    .summary-value {
-      color: var(--text-primary);
-      font-weight: 600;
-      font-variant-numeric: tabular-nums;
-      white-space: nowrap;
-    }
-
-    .section-header {
-      background-color: #161618;
-      padding: 7px 14px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      color: var(--text-secondary);
-      font-size: 13.5px;
-      font-weight: 500;
-    }
-
-    .history-subtabs {
-      display: flex;
-      border-bottom: 1px solid #1b1b1e;
-      background-color: var(--bg-black);
-    }
-
-    .history-subtab {
-      flex: 1;
-      text-align: center;
-      padding: 14px 0;
-      font-size: 13px;
-      font-weight: 600;
-      letter-spacing: 0.4px;
-      color: #8e8e93;
-      border-bottom: 2px solid transparent;
-      cursor: pointer;
-    }
-
-    .history-subtab.active {
-      color: var(--text-primary);
-      border-bottom-color: var(--blue-profit);
-    }
-
-    .period-dropdown-backdrop {
-      position: fixed;
-      inset: 0;
-      z-index: 40;
-      display: none;
-    }
-
-    .period-dropdown-backdrop.open {
-      display: block;
-    }
-
-    .period-dropdown {
-      position: fixed;
-      top: 56px;
-      right: 12px;
-      width: 275px;
-      background-color: var(--bg-menu);
-      border-radius: 12px;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.85);
-      z-index: 45;
-      display: none;
-      overflow: hidden;
-      border: 1px solid #2c2c2f;
-    }
-
-    .period-dropdown.open {
-      display: block;
-    }
-
-    .period-option {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 12px 14px;
-      border-bottom: 1px solid #2a2a2d;
-      cursor: pointer;
-    }
-
-    .period-option:last-child {
-      border-bottom: none;
-    }
-
-    .period-option-left {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-
-    .period-icon-box {
-      width: 32px;
-      height: 32px;
-      border-radius: 6px;
-      background-color: #313135;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: #e5e5ea;
-      font-size: 13px;
-      font-weight: 700;
-      flex-shrink: 0;
-    }
-
-    .period-title {
-      font-size: 14.5px;
-      font-weight: 500;
-      color: var(--text-primary);
-      line-height: 1.25;
-    }
-
-    .period-dates {
-      font-size: 12px;
-      color: #a1a1a6;
-      line-height: 1.25;
-      margin-top: 2px;
-    }
-
-    .period-check {
-      color: #3a8ee6;
-      font-size: 18px;
-      font-weight: 700;
-    }
-
-    .custom-range-box {
-      display: none;
-      gap: 8px;
-      padding: 8px 14px;
-      background-color: #111113;
-      border-bottom: 1px solid var(--border-color);
-      align-items: center;
-    }
-
-    .custom-range-box.open {
-      display: flex;
-    }
-
-    .custom-range-box input[type="date"] {
-      flex: 1;
-      background-color: #1c1c1e;
-      border: 1px solid #2e2e32;
-      color: #fff;
-      padding: 6px 8px;
-      border-radius: 6px;
-      font-size: 12px;
-    }
-
-    .empty-history {
-      padding: 86px 20px 36px 20px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 12px;
-      color: #555558;
-    }
-
-    .empty-history-text {
-      font-size: 14px;
-      color: #8e8e93;
-    }
-
-    .position-item {
-      padding: 10px 14px;
-      border-bottom: 1px solid #18181b;
-      display: flex;
-      align-items: flex-start;
-      justify-content: space-between;
-      gap: 10px;
-    }
-
-    .pos-left {
-      display: flex;
-      flex-direction: column;
-      gap: 3px;
-    }
-
-    .pos-top {
-      font-size: 14.5px;
-      font-weight: 600;
-      color: var(--text-primary);
-    }
-
-    .pos-type-buy { color: var(--blue-profit); font-weight: 600; }
-    .pos-type-sell { color: var(--red-loss); font-weight: 600; }
-
-    .pos-prices {
-      font-size: 13px;
-      color: #9a9aa0;
-      font-variant-numeric: tabular-nums;
-    }
-
-    .pos-right-col {
-      display: flex;
-      flex-direction: column;
-      align-items: flex-end;
-      gap: 3px;
-      flex-shrink: 0;
-    }
-
-    .pos-time {
-      font-size: 12px;
-      color: #9a9aa0;
-      font-variant-numeric: tabular-nums;
-    }
-
-    .pos-right {
-      font-size: 15px;
-      font-weight: 600;
-      font-variant-numeric: tabular-nums;
-    }
-
-    .bottom-nav {
-      height: 62px;
-      background-color: var(--bg-black);
-      border-top: 1px solid #161618;
-      display: flex;
-      align-items: center;
-      justify-content: space-around;
-      padding: 4px 0 8px 0;
-      flex-shrink: 0;
-    }
-
-    .nav-item {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 4px;
-      color: var(--text-secondary);
-      font-size: 11px;
-      cursor: pointer;
-      flex: 1;
-      position: relative;
-    }
-
-    .nav-item.active {
-      color: var(--text-primary);
-    }
-
-    .nav-badge-pill {
-      background-color: #1c2738;
-      color: var(--blue-profit);
-      padding: 1px 8px;
-      border-radius: 10px;
-      font-size: 11px;
-      font-weight: 600;
-    }
-
-    .nav-badge-pill.neg {
-      background-color: #361c1e;
-      color: var(--red-loss);
-    }
-
-    .msg-badge {
-      position: absolute;
-      top: -2px;
-      right: 26%;
-      background-color: #d9534f;
-      color: #fff;
-      font-size: 10px;
-      font-weight: 700;
-      width: 16px;
-      height: 16px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .drawer-overlay {
-      position: fixed;
-      inset: 0;
-      background-color: rgba(0, 0, 0, 0.65);
-      z-index: 90;
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 0.25s ease;
-    }
-
-    .drawer-overlay.open {
-      opacity: 1;
-      pointer-events: auto;
-    }
-
-    .drawer {
-      position: fixed;
-      top: 0;
-      left: 0;
-      bottom: 0;
-      width: 84%;
-      max-width: 340px;
-      background-color: var(--bg-drawer);
-      z-index: 100;
-      transform: translateX(-100%);
-      transition: transform 0.25s cubic-bezier(0.2, 0.8, 0.2, 1);
-      display: flex;
-      flex-direction: column;
-      padding: 18px 12px 20px 12px;
-      overflow-y: auto;
-    }
-
-    .drawer.open {
-      transform: translateX(0);
-    }
-
-    .drawer-header {
-      display: flex;
-      align-items: flex-start;
-      gap: 14px;
-      padding: 4px 8px 16px 8px;
-      border-bottom: 1px solid #1b1b1e;
-    }
-
-    .broker-logo {
-      width: 44px;
-      height: 44px;
-      background-color: var(--exness-yellow);
-      border-radius: 4px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: #000;
-      font-weight: 800;
-      font-size: 11px;
-      letter-spacing: -0.3px;
-      flex-shrink: 0;
-    }
-
-    .account-info {
-      display: flex;
-      flex-direction: column;
-      gap: 3px;
-      overflow: hidden;
-    }
-
-    .acc-name {
-      font-size: 16px;
-      font-weight: 500;
-      color: var(--text-primary);
-    }
-
-    .acc-server {
-      font-size: 13px;
-      color: var(--text-secondary);
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-
-    .manage-link {
-      color: #4a90e2;
-      font-size: 14.5px;
-      margin-top: 8px;
-      cursor: pointer;
-    }
-
-    .drawer-menu {
-      display: flex;
-      flex-direction: column;
-      gap: 2px;
-      margin-top: 8px;
-    }
-
-    .drawer-item {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 11px 14px;
-      border-radius: 24px;
-      color: var(--text-primary);
-      font-size: 14.5px;
-      font-weight: 500;
-      cursor: pointer;
-    }
-
-    .drawer-item.active {
-      background-color: var(--bg-pill);
-    }
-
-    .drawer-item-left {
-      display: flex;
-      align-items: center;
-      gap: 16px;
-    }
-
-    .mail-badge {
-      background-color: #d9534f;
-      color: #fff;
-      font-size: 11px;
-      font-weight: 700;
-      padding: 2px 7px;
-      border-radius: 12px;
-    }
-
-    .ads-pill {
-      border: 1px solid #3a4a63;
-      color: #5b8ad6;
-      font-size: 11px;
-      padding: 1px 8px;
-      border-radius: 12px;
-    }
-
-    .modal {
-      position: fixed;
-      inset: 0;
-      background-color: var(--bg-black);
-      z-index: 120;
-      display: none;
-      flex-direction: column;
-      padding: 20px;
-      overflow-y: auto;
-    }
-
-    .modal.open {
-      display: flex;
-    }
-
-    .modal-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 24px;
-      padding-bottom: 12px;
-      border-bottom: 1px solid var(--border-color);
-    }
-
-    .form-group {
-      margin-bottom: 16px;
-    }
-
-    .form-group label {
-      display: block;
-      font-size: 13px;
-      color: var(--text-secondary);
-      margin-bottom: 6px;
-    }
-
-    .form-group input, .form-group select {
-      width: 100%;
-      background-color: #1c1c1e;
-      border: 1px solid #2c2c2e;
-      color: #fff;
-      padding: 12px;
-      border-radius: 8px;
-      font-size: 15px;
-      user-select: text;
-    }
-
-    .save-btn {
-      background-color: var(--blue-profit);
-      color: #fff;
-      border: none;
-      padding: 14px;
-      border-radius: 8px;
-      font-size: 16px;
-      font-weight: 600;
-      margin-top: 10px;
-      cursor: pointer;
-    }
-  </style>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+<meta name="theme-color" content="#000000" />
+<meta name="mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<title>MetaTrader 5</title>
+<link id="manifestLink" rel="manifest" />
+<style>
+:root{--bg:#000;--menu:#2b2c2f;--drawer:#0d0d0f;--pill:#232325;--tx:#fff;--tx2:#8e8e93;--blue:#3a86ec;--red:#ec5b5f;--line:#2a2a2d;--yellow:#ffcf01}
+*{box-sizing:border-box;margin:0;padding:0;font-family:Roboto,-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;-webkit-tap-highlight-color:transparent;user-select:none}
+body{background:var(--bg);color:var(--tx);height:100dvh;display:flex;flex-direction:column;overflow:hidden}
+.topbar{height:58px;padding:0 14px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.topbar-left{display:flex;align-items:center;gap:22px}
+.icon-btn,.menu-btn{background:none;border:none;color:var(--tx);cursor:pointer;display:flex;align-items:center;justify-content:center;padding:4px}
+.title-group{display:flex;flex-direction:column}
+.title-main{font-size:15px;font-weight:500;line-height:1.2}
+.title-sub{font-size:16px;font-weight:600;line-height:1.25}
+.title-sub-muted{font-size:18px;font-weight:400;color:#9a9aa0;line-height:1.25}
+.profit-pos{color:var(--blue)}.profit-neg{color:var(--red)}
+.topbar-actions{display:flex;align-items:center;gap:22px}
+.content{flex:1;overflow-y:auto;display:none}
+.content.active{display:block}
+.summary-section{padding:14px 14px 12px;border-bottom:1px solid var(--line)}
+.summary-row{display:flex;align-items:flex-end;margin-bottom:9px;font-size:16.5px;line-height:19px}
+.summary-row:last-child{margin-bottom:0}
+.summary-label{font-weight:700;white-space:nowrap}
+.summary-dots{flex:1;height:4px;margin:0 10px 4px;background:radial-gradient(circle,#55555a 1.3px,transparent 1.7px) 0 0/8px 4px repeat-x}
+.summary-value{font-weight:700;font-variant-numeric:tabular-nums;white-space:nowrap}
+.section-header{background:#161618;padding:7px 14px;display:flex;justify-content:space-between;color:var(--tx2);font-size:13.5px;font-weight:500}
+.history-subtabs{display:flex}
+.history-subtab{flex:1;text-align:center;padding:15px 0 13px;font-size:16px;font-weight:500;color:var(--tx2);border-bottom:3px solid transparent;cursor:pointer;text-transform:uppercase}
+.history-subtab.active{color:var(--tx);border-bottom-color:var(--blue)}
+.period-backdrop{position:fixed;inset:0;z-index:40;display:none}
+.period-backdrop.open{display:block}
+.period-dropdown{position:fixed;top:8px;right:9px;width:224px;background:var(--menu);border-radius:18px;box-shadow:0 8px 28px rgba(0,0,0,.7);z-index:45;display:none;overflow:hidden}
+.period-dropdown.open{display:block}
+.period-option{display:flex;align-items:center;justify-content:space-between;padding:0 14px 0 12px;height:52px;border-bottom:1px solid #3a3c42;cursor:pointer}
+.period-option:last-child{border-bottom:none}
+.period-left{display:flex;align-items:center;gap:12px}
+.period-left svg{color:#e0e0e4;flex-shrink:0}
+.period-title{font-size:17px;font-weight:500;line-height:1.2}
+.period-dates{font-size:15px;color:#a1a1a6;line-height:1.2}
+.period-check{display:none;flex-shrink:0}
+.custom-range-box{display:none;gap:8px;padding:8px 14px;border-bottom:1px solid var(--line)}
+.custom-range-box.open{display:flex}
+.custom-range-box input{flex:1;background:#1c1c1e;border:1px solid #2e2e32;color:#fff;padding:6px 8px;border-radius:6px;font-size:13px;user-select:text}
+.empty-history{height:calc(100dvh - 58px - 62px - 49px);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px}
+.empty-history-text{font-size:17px;color:var(--tx2)}
+.position-item{padding:6px 14px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;gap:10px}
+.pos-left{display:flex;flex-direction:column;gap:1px;min-width:0}
+.pos-top{font-size:17px;font-weight:700;line-height:1.3}
+.pos-type-buy{color:var(--blue);font-weight:500}.pos-type-sell{color:var(--red);font-weight:500}
+.pos-prices{font-size:17px;font-weight:500;color:#d4d4d8;font-variant-numeric:tabular-nums;display:flex;align-items:center;gap:7px;line-height:1.3;white-space:nowrap}
+.pos-right-col{display:flex;flex-direction:column;align-items:flex-end;gap:1px;flex-shrink:0}
+.pos-time{font-size:15px;color:#a0a0a5;font-variant-numeric:tabular-nums;line-height:1.3}
+.pos-right{font-size:16px;font-weight:700;font-variant-numeric:tabular-nums;line-height:1.3}
+.bottom-nav{height:62px;border-top:1px solid #161618;display:flex;align-items:center;flex-shrink:0;padding:4px 0 6px}
+.nav-item{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;color:var(--tx2);font-size:13px;font-weight:500;cursor:pointer;flex:1;position:relative}
+.nav-item.active{color:var(--blue)}
+.nav-badge-pill{background:#1c2738;color:var(--blue);padding:2px 10px;border-radius:12px;font-size:15px;font-weight:600}
+.nav-badge-pill.neg{background:#3a1e20;color:var(--red)}
+.msg-badge{position:absolute;top:-3px;right:24%;background:#e5484d;color:#fff;font-size:11px;font-weight:700;width:17px;height:17px;border-radius:50%;display:flex;align-items:center;justify-content:center}
+.drawer-overlay{position:fixed;inset:0;background:rgba(0,0,0,.65);z-index:90;opacity:0;pointer-events:none;transition:opacity .25s}
+.drawer-overlay.open{opacity:1;pointer-events:auto}
+.drawer{position:fixed;top:0;left:0;bottom:0;width:84%;max-width:340px;background:var(--drawer);z-index:100;transform:translateX(-100%);transition:transform .25s cubic-bezier(.2,.8,.2,1);display:flex;flex-direction:column;padding:18px 12px 20px;overflow-y:auto}
+.drawer.open{transform:none}
+.drawer-header{display:flex;gap:14px;padding:4px 8px 16px;border-bottom:1px solid #1b1b1e}
+.broker-logo{width:44px;height:44px;background:var(--yellow);border-radius:4px;display:flex;align-items:center;justify-content:center;color:#000;font-weight:800;font-size:11px;flex-shrink:0}
+.account-info{display:flex;flex-direction:column;gap:3px;overflow:hidden}
+.acc-name{font-size:16px;font-weight:500}
+.acc-server{font-size:13px;color:var(--tx2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.manage-link{color:#4a90e2;font-size:14.5px;margin-top:8px;cursor:pointer}
+.drawer-menu{display:flex;flex-direction:column;gap:2px;margin-top:8px}
+.drawer-item{display:flex;align-items:center;justify-content:space-between;padding:11px 14px;border-radius:24px;font-size:14.5px;font-weight:500;cursor:pointer}
+.drawer-item.active{background:var(--pill)}
+.drawer-item-left{display:flex;align-items:center;gap:16px}
+.mail-badge{background:#e5484d;color:#fff;font-size:11px;font-weight:700;padding:2px 7px;border-radius:12px}
+.ads-pill{border:1px solid #3a4a63;color:#5b8ad6;font-size:11px;padding:1px 8px;border-radius:12px}
+.modal{position:fixed;inset:0;background:var(--bg);z-index:120;display:none;flex-direction:column;padding:20px;overflow-y:auto}
+.modal.open{display:flex}
+.modal-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;padding-bottom:12px;border-bottom:1px solid var(--line)}
+.form-group{margin-bottom:16px}
+.form-group label{display:block;font-size:13px;color:var(--tx2);margin-bottom:6px}
+.form-group input,.form-group select{width:100%;background:#1c1c1e;border:1px solid #2c2c2e;color:#fff;padding:12px;border-radius:8px;font-size:15px;user-select:text}
+.save-btn{background:var(--blue);color:#fff;border:none;padding:14px;border-radius:8px;font-size:16px;font-weight:600;margin-top:10px;cursor:pointer}
+</style>
 </head>
 <body>
 
-  <!-- Top Bar -->
-  <header class="topbar">
-    <div class="topbar-left">
-      <button class="menu-btn" onclick="toggleDrawer(true)">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <line x1="3" y1="6" x2="21" y2="6"></line>
-          <line x1="3" y1="12" x2="21" y2="12"></line>
-          <line x1="3" y1="18" x2="21" y2="18"></line>
-        </svg>
-      </button>
-      <div class="title-group" id="headerTitleGroup">
-        <span class="title-main" id="headerTitle">Trade</span>
-        <span id="topProfit" class="title-sub profit-pos">0.00 USD</span>
-      </div>
-    </div>
-
-    <div class="topbar-actions" id="tradeActions">
-      <button class="icon-btn" title="Deposit / Withdraw">
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-          <rect x="2" y="5" width="20" height="14" rx="2"></rect>
-          <line x1="2" y1="10" x2="22" y2="10"></line>
-        </svg>
-      </button>
-      <button class="icon-btn" title="Sort">
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-          <path d="M7 20V4M7 4L3 8M7 4L11 8"></path>
-          <path d="M17 4V20M17 20L13 16M17 20L21 16"></path>
-        </svg>
-      </button>
-      <button class="icon-btn" title="New Order">
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-          <polyline points="14 2 14 8 20 8"></polyline>
-          <line x1="12" y1="18" x2="12" y2="12"></line>
-          <line x1="9" y1="15" x2="15" y2="15"></line>
-        </svg>
-      </button>
-    </div>
-
-    <div class="topbar-actions" id="historyActions" style="display: none;">
-      <button class="icon-btn" title="Summary" onclick="scrollHistoryToSummary()">
-        <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-          <path d="M21 12a9 9 0 1 1-2.64-6.36"></path>
-          <polyline points="21 3 21 9 15 9"></polyline>
-          <text x="12" y="15.5" text-anchor="middle" font-size="9.5" font-weight="700" fill="currentColor" stroke="none">$</text>
-        </svg>
-      </button>
-      <button class="icon-btn" title="Filter by Symbol" onclick="openSymbolFilter()">
-        <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-          <path d="M7 20V4M7 4L3 8M7 4L11 8"></path>
-          <path d="M17 4V20M17 20L13 16M17 20L21 16"></path>
-        </svg>
-      </button>
-      <button class="icon-btn" title="Select Period" onclick="togglePeriodDropdown()">
-        <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-          <rect x="3" y="4" width="18" height="18" rx="2"></rect>
-          <line x1="16" y1="2" x2="16" y2="6"></line>
-          <line x1="8" y1="2" x2="8" y2="6"></line>
-          <line x1="3" y1="10" x2="21" y2="10"></line>
-        </svg>
-      </button>
-    </div>
-  </header>
-
-  <!-- Period Dropdown Menu -->
-  <div class="period-dropdown-backdrop" id="periodBackdrop" onclick="closePeriodDropdown()"></div>
-  <div class="period-dropdown" id="periodDropdown">
-    <div class="period-option" data-period="today" onclick="selectPeriod('today')">
-      <div class="period-option-left">
-        <div class="period-icon-box">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line><circle cx="8" cy="14" r="1" fill="currentColor"></circle><circle cx="12" cy="14" r="1" fill="currentColor"></circle><circle cx="16" cy="14" r="1" fill="currentColor"></circle><circle cx="8" cy="18" r="1" fill="currentColor"></circle><circle cx="12" cy="18" r="1" fill="currentColor"></circle></svg>
-        </div>
-        <div>
-          <div class="period-title">Today</div>
-          <div class="period-dates" id="lblTodayDate">11/14/26</div>
-        </div>
-      </div>
-      <span class="period-check" id="chk-today">✓</span>
-    </div>
-
-    <div class="period-option" data-period="week" onclick="selectPeriod('week')">
-      <div class="period-option-left">
-        <div class="period-icon-box">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
-        </div>
-        <div>
-          <div class="period-title">Last week</div>
-          <div class="period-dates" id="lblWeekDate">11/7/26 - 11/14/26</div>
-        </div>
-      </div>
-      <span class="period-check" id="chk-week" style="display:none;">✓</span>
-    </div>
-
-    <div class="period-option" data-period="month" onclick="selectPeriod('month')">
-      <div class="period-option-left">
-        <div class="period-icon-box">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
-        </div>
-        <div>
-          <div class="period-title">Last month</div>
-          <div class="period-dates" id="lblMonthDate">10/14/26 - 11/14/26</div>
-        </div>
-      </div>
-      <span class="period-check" id="chk-month" style="display:none;">✓</span>
-    </div>
-
-    <div class="period-option" data-period="3months" onclick="selectPeriod('3months')">
-      <div class="period-option-left">
-        <div class="period-icon-box" style="font-size: 14px; font-weight: 800;">3</div>
-        <div>
-          <div class="period-title">Last 3 months</div>
-          <div class="period-dates" id="lbl3MonthsDate">8/14/26 - 11/14/26</div>
-        </div>
-      </div>
-      <span class="period-check" id="chk-3months" style="display:none;">✓</span>
-    </div>
-
-    <div class="period-option" data-period="custom" onclick="selectPeriod('custom')">
-      <div class="period-option-left">
-        <div class="period-icon-box">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"></circle><polyline points="12 7 12 12 15 15"></polyline></svg>
-        </div>
-        <div>
-          <div class="period-title">Custom period</div>
-          <div class="period-dates" id="lblCustomDate">11/11/26 - 11/12/26</div>
-        </div>
-      </div>
-      <span class="period-check" id="chk-custom" style="display:none;">✓</span>
+<header class="topbar">
+  <div class="topbar-left">
+    <button class="menu-btn" onclick="toggleDrawer(true)">
+      <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+    </button>
+    <div class="title-group">
+      <span class="title-main" id="headerTitle">Trade</span>
+      <span id="topProfit" class="title-sub profit-pos">0.00 USD</span>
     </div>
   </div>
 
-  <!-- Trade View -->
-  <main class="content active" id="tradeView">
-    <div class="summary-section">
-      <div class="summary-row">
-        <span class="summary-label">Balance:</span>
-        <span class="summary-dots"></span>
-        <span class="summary-value" id="valBalance">0.00</span>
-      </div>
-      <div class="summary-row">
-        <span class="summary-label">Equity:</span>
-        <span class="summary-dots"></span>
-        <span class="summary-value" id="valEquity">0.00</span>
-      </div>
-      <div class="summary-row" id="rowMargin">
-        <span class="summary-label">Margin:</span>
-        <span class="summary-dots"></span>
-        <span class="summary-value" id="valMargin">0.00</span>
-      </div>
-      <div class="summary-row">
-        <span class="summary-label">Free margin:</span>
-        <span class="summary-dots"></span>
-        <span class="summary-value" id="valFreeMargin">0.00</span>
-      </div>
-      <div class="summary-row" id="rowMarginLevel">
-        <span class="summary-label">Margin Level (%):</span>
-        <span class="summary-dots"></span>
-        <span class="summary-value" id="valMarginLevel">0.00</span>
-      </div>
-    </div>
-
-    <div class="section-header" id="positionsHeader">
-      <span>Positions</span>
-      <span>•••</span>
-    </div>
-
-    <div id="positionsList"></div>
-  </main>
-
-  <!-- History View -->
-  <section class="content" id="historyView">
-    <div class="history-subtabs">
-      <div class="history-subtab active" id="subtabPositions" onclick="setHistorySubtab('positions')">POSITIONS</div>
-      <div class="history-subtab" id="subtabOrders" onclick="setHistorySubtab('orders')">ORDERS</div>
-      <div class="history-subtab" id="subtabDeals" onclick="setHistorySubtab('deals')">DEALS</div>
-    </div>
-
-    <div class="custom-range-box" id="customRangeBox">
-      <input type="date" id="inpFromDate" value="2026-11-11" onchange="onCustomDateChange()" />
-      <input type="date" id="inpToDate" value="2026-11-12" onchange="onCustomDateChange()" />
-    </div>
-
-    <div class="summary-section" id="historySummarySection" style="display:none;">
-      <div class="summary-row">
-        <span class="summary-label">Profit:</span>
-        <span class="summary-dots"></span>
-        <span class="summary-value" id="histProfit">0.00</span>
-      </div>
-      <div class="summary-row">
-        <span class="summary-label">Deposit:</span>
-        <span class="summary-dots"></span>
-        <span class="summary-value" id="histDeposit">0.00</span>
-      </div>
-      <div class="summary-row">
-        <span class="summary-label">Swap:</span>
-        <span class="summary-dots"></span>
-        <span class="summary-value" id="histSwap">0.00</span>
-      </div>
-      <div class="summary-row">
-        <span class="summary-label">Commission:</span>
-        <span class="summary-dots"></span>
-        <span class="summary-value" id="histCommission">0.00</span>
-      </div>
-      <div class="summary-row">
-        <span class="summary-label">Balance:</span>
-        <span class="summary-dots"></span>
-        <span class="summary-value" id="histBalance">0.00</span>
-      </div>
-    </div>
-
-    <div id="historyList"></div>
-  </section>
-
-  <!-- Bottom Navigation -->
-  <nav class="bottom-nav">
-    <div class="nav-item" id="navQuotes" onclick="switchTab('trade')">
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-        <path d="M7 20V4M7 4L3 8M7 4L11 8M17 4V20M17 20L13 16M17 20L21 16"></path>
-      </svg>
-      <span>Quotes</span>
-    </div>
-    <div class="nav-item" id="navCharts" onclick="switchTab('trade')">
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-        <rect x="5" y="6" width="4" height="10"></rect>
-        <line x1="7" y1="2" x2="7" y2="6"></line>
-        <line x1="7" y1="16" x2="7" y2="21"></line>
-        <rect x="15" y="9" width="4" height="9"></rect>
-        <line x1="17" y1="4" x2="17" y2="9"></line>
-        <line x1="17" y1="18" x2="17" y2="22"></line>
-      </svg>
-      <span>Charts</span>
-    </div>
-    <div class="nav-item active" id="navTrade" onclick="switchTab('trade')">
-      <svg id="iconTrade" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#2b7de9" stroke-width="2">
-        <polyline points="3 17 9 11 13 15 21 7"></polyline>
-        <circle cx="3" cy="17" r="1.5" fill="#2b7de9"></circle>
-        <circle cx="9" cy="11" r="1.5" fill="#2b7de9"></circle>
-        <circle cx="13" cy="15" r="1.5" fill="#2b7de9"></circle>
-        <circle cx="21" cy="7" r="1.5" fill="#2b7de9"></circle>
-      </svg>
-      <span id="navProfitPill" class="nav-badge-pill">0.00</span>
-    </div>
-    <div class="nav-item" id="navHistory" onclick="switchTab('history')">
-      <svg id="iconHistory" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-        <circle cx="12" cy="12" r="9"></circle>
-        <polyline points="12 7 12 12 15 15"></polyline>
-      </svg>
-      <span>History</span>
-    </div>
-    <div class="nav-item" id="navMessages" onclick="switchTab('trade')">
-      <span class="msg-badge">2</span>
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
-      </svg>
-      <span>Messages</span>
-    </div>
-  </nav>
-
-  <!-- Side Drawer -->
-  <div class="drawer-overlay" id="drawerOverlay" onclick="toggleDrawer(false)"></div>
-  <aside class="drawer" id="sideDrawer">
-    <div class="drawer-header">
-      <div class="broker-logo">exness</div>
-      <div class="account-info">
-        <div class="acc-name" id="drawerAccName">Client</div>
-        <div class="acc-server" id="drawerAccServer">43233923 - Exness-MT5Real2</div>
-        <div class="manage-link" onclick="openSettings()">Manage accounts</div>
-      </div>
-    </div>
-
-    <div class="drawer-menu">
-      <div class="drawer-item active" onclick="switchTab('trade'); toggleDrawer(false)">
-        <div class="drawer-item-left">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <polyline points="3 17 9 11 13 15 21 7"></polyline>
-          </svg>
-          <span>Trade</span>
-        </div>
-      </div>
-      <div class="drawer-item" onclick="openSettings()">
-        <div class="drawer-item-left">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-            <circle cx="12" cy="12" r="3"></circle>
-            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
-          </svg>
-          <span>Settings</span>
-        </div>
-      </div>
-    </div>
-  </aside>
-
-  <!-- Symbol Filter Modal -->
-  <div class="modal" id="symbolModal">
-    <div class="modal-header">
-      <h3>Select Symbol</h3>
-      <button class="icon-btn" onclick="closeSymbolFilter()">✕</button>
-    </div>
-    <div class="form-group">
-      <label>Symbol Filter</label>
-      <select id="selSymbolFilter" onchange="onSymbolFilterChange()">
-        <option value="ALL">All symbols</option>
-      </select>
-    </div>
+  <div class="topbar-actions" id="tradeActions">
+    <button class="icon-btn"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg></button>
+    <button class="icon-btn"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M7 20V4M7 4L3 8M7 4L11 8M17 4V20M17 20L13 16M17 20L21 16"/></svg></button>
+    <button class="icon-btn"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="15" y2="15"/></svg></button>
   </div>
 
-  <!-- Custom Settings Modal -->
-  <div class="modal" id="settingsModal">
-    <div class="modal-header">
-      <h3>Account & Sync Settings</h3>
-      <button class="icon-btn" onclick="closeSettings()">✕</button>
-    </div>
-
-    <div class="form-group">
-      <label>Account Name</label>
-      <input type="text" id="inpAccName" placeholder="Client" />
-    </div>
-
-    <div class="form-group">
-      <label>Account Number & Server</label>
-      <input type="text" id="inpAccServer" placeholder="43233923 - Exness-MT5Real2" />
-    </div>
-
-    <div class="form-group">
-      <label>Firebase Database URL</label>
-      <input type="text" id="inpFirebaseUrl" placeholder="https://your-project.firebaseio.com" />
-    </div>
-
-    <button class="save-btn" onclick="saveSettings()">Save Changes</button>
+  <div class="topbar-actions" id="historyActions" style="display:none">
+    <button class="icon-btn" onclick="scrollHistoryToSummary()">
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M20.5 12a8.5 8.5 0 1 1-2.6-6.1"/><polyline points="20.5 3 20.5 8 15.5 8"/><path d="M14.4 9.6c-.5-.7-1.3-1-2.3-1-1.3 0-2.2.6-2.2 1.6 0 2.1 4.6 1 4.6 3.2 0 1-1 1.7-2.4 1.7-1.1 0-2-.4-2.5-1.2M12 7.2v9.6" stroke-width="1.6"/></svg>
+    </button>
+    <button class="icon-btn" onclick="openSymbolFilter()">
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 20V4M7 4L3 8M7 4L11 8M17 4V20M17 20L13 16M17 20L21 16"/></svg>
+    </button>
+    <button class="icon-btn" id="btnPeriod" onclick="togglePeriodDropdown()"></button>
   </div>
+</header>
 
-  <script>
-    const iconSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><rect width="512" height="512" rx="110" fill="#121212"/><circle cx="256" cy="256" r="160" fill="none" stroke="#2b7de9" stroke-width="32"/><path d="M180 300 L230 220 L280 260 L340 180" fill="none" stroke="#ffcf01" stroke-width="32" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
-    const iconUrl = "data:image/svg+xml;base64," + btoa(iconSvg);
-    const manifestObj = {
-      name: "MetaTrader 5",
-      short_name: "MetaTrader 5",
-      start_url: location.href,
-      display: "standalone",
-      background_color: "#000000",
-      theme_color: "#000000",
-      icons: [{ src: iconUrl, sizes: "512x512", type: "image/svg+xml" }]
-    };
-    document.getElementById("manifestLink").href = "data:application/manifest+json;charset=utf-8," + encodeURIComponent(JSON.stringify(manifestObj));
+<div class="period-backdrop" id="periodBackdrop" onclick="closePeriodDropdown()"></div>
+<div class="period-dropdown" id="periodDropdown"></div>
 
-    const defaultConfig = {
-      accName: "Client",
-      accServer: "43233923 - Exness-MT5Real2",
-      firebaseUrl: "https://muastafa-default-rtdb.firebaseio.com"
-    };
+<main class="content active" id="tradeView">
+  <div class="summary-section">
+    <div class="summary-row"><span class="summary-label">Balance:</span><span class="summary-dots"></span><span class="summary-value" id="valBalance">0.00</span></div>
+    <div class="summary-row"><span class="summary-label">Equity:</span><span class="summary-dots"></span><span class="summary-value" id="valEquity">0.00</span></div>
+    <div class="summary-row" id="rowMargin"><span class="summary-label">Margin:</span><span class="summary-dots"></span><span class="summary-value" id="valMargin">0.00</span></div>
+    <div class="summary-row"><span class="summary-label">Free margin:</span><span class="summary-dots"></span><span class="summary-value" id="valFreeMargin">0.00</span></div>
+    <div class="summary-row" id="rowMarginLevel"><span class="summary-label">Margin Level (%):</span><span class="summary-dots"></span><span class="summary-value" id="valMarginLevel">0.00</span></div>
+  </div>
+  <div class="section-header" id="positionsHeader"><span>Positions</span><span>•••</span></div>
+  <div id="positionsList"></div>
+</main>
 
-    let config = JSON.parse(localStorage.getItem("mt5_custom_config")) || defaultConfig;
-    let activeTab = "trade";
-    let historySubtab = "positions";
-    let historyPeriod = "today";
-    let symbolFilter = "ALL";
-    let latestData = { balance: 0, equity: 0, margin: 0, freeMargin: 0, marginLevel: 0, positions: [], history: [] };
+<section class="content" id="historyView">
+  <div class="history-subtabs">
+    <div class="history-subtab active" id="subtabPositions" onclick="setHistorySubtab('positions')">Positions</div>
+    <div class="history-subtab" id="subtabOrders" onclick="setHistorySubtab('orders')">Orders</div>
+    <div class="history-subtab" id="subtabDeals" onclick="setHistorySubtab('deals')">Deals</div>
+  </div>
+  <div class="custom-range-box" id="customRangeBox">
+    <input type="date" id="inpFromDate" value="2026-11-11" onchange="onCustomDateChange()" />
+    <input type="date" id="inpToDate" value="2026-11-12" onchange="onCustomDateChange()" />
+  </div>
+  <div class="summary-section" id="historySummarySection" style="display:none">
+    <div class="summary-row"><span class="summary-label">Profit:</span><span class="summary-dots"></span><span class="summary-value" id="histProfit">0.00</span></div>
+    <div class="summary-row"><span class="summary-label">Deposit</span><span class="summary-dots"></span><span class="summary-value" id="histDeposit">0.00</span></div>
+    <div class="summary-row"><span class="summary-label">Swap:</span><span class="summary-dots"></span><span class="summary-value" id="histSwap">0.00</span></div>
+    <div class="summary-row"><span class="summary-label">Commission:</span><span class="summary-dots"></span><span class="summary-value" id="histCommission">0.00</span></div>
+    <div class="summary-row"><span class="summary-label">Balance:</span><span class="summary-dots"></span><span class="summary-value" id="histBalance">0.00</span></div>
+  </div>
+  <div id="historyList"></div>
+</section>
 
-    function fmtShortDate(d) {
-      return `${d.getMonth() + 1}/${d.getDate()}/${String(d.getFullYear()).slice(-2)}`;
-    }
+<nav class="bottom-nav">
+  <div class="nav-item" onclick="switchTab('trade')">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 20V4M7 4L3 8M7 4L11 8M17 4V20M17 20L13 16M17 20L21 16"/></svg><span>Quotes</span>
+  </div>
+  <div class="nav-item" onclick="switchTab('trade')">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="6" width="4" height="10"/><line x1="7" y1="2" x2="7" y2="6"/><line x1="7" y1="16" x2="7" y2="21"/><rect x="15" y="9" width="4" height="9"/><line x1="17" y1="4" x2="17" y2="9"/><line x1="17" y1="18" x2="17" y2="22"/></svg><span>Charts</span>
+  </div>
+  <div class="nav-item active" id="navTrade" onclick="switchTab('trade')">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"><polyline points="3 17 9 11 13 15 21 7"/><g fill="currentColor"><circle cx="3.5" cy="17" r="1.8"/><circle cx="9" cy="11" r="1.8"/><circle cx="13" cy="15" r="1.8"/><circle cx="20.5" cy="7.5" r="1.8"/></g></svg>
+    <span id="navProfitPill" class="nav-badge-pill">0.00</span>
+  </div>
+  <div class="nav-item" id="navHistory" onclick="switchTab('history')">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M3.5 12a8.5 8.5 0 1 0 2.6-6.1"/><polyline points="3.5 3.5 3.5 8.5 8.5 8.5"/><polyline points="12 7.5 12 12 15.5 14"/></svg><span>History</span>
+  </div>
+  <div class="nav-item" onclick="switchTab('trade')">
+    <span class="msg-badge">2</span>
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg><span>Messages</span>
+  </div>
+</nav>
 
-    function updatePeriodLabels() {
-      const now = new Date();
-      const weekAgo = new Date(now.getTime() - 7 * 86400000);
-      const monthAgo = new Date(now.getTime() - 30 * 86400000);
-      const threeMonthsAgo = new Date(now.getTime() - 90 * 86400000);
+<div class="drawer-overlay" id="drawerOverlay" onclick="toggleDrawer(false)"></div>
+<aside class="drawer" id="sideDrawer">
+  <div class="drawer-header">
+    <div class="broker-logo">exness</div>
+    <div class="account-info">
+      <div class="acc-name" id="drawerAccName">Client</div>
+      <div class="acc-server" id="drawerAccServer"></div>
+      <div class="manage-link" onclick="openSettings()">Manage accounts</div>
+    </div>
+  </div>
+  <div class="drawer-menu">
+    <div class="drawer-item active" onclick="switchTab('trade');toggleDrawer(false)"><div class="drawer-item-left"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 17 9 11 13 15 21 7"/></svg><span>Trade</span></div></div>
+    <div class="drawer-item" onclick="toggleDrawer(false)"><div class="drawer-item-left"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="7" y1="8" x2="17" y2="8"/><line x1="7" y1="12" x2="17" y2="12"/></svg><span>News</span></div></div>
+    <div class="drawer-item" onclick="toggleDrawer(false)"><div class="drawer-item-left"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2" y="4" width="20" height="16" rx="2"/><polyline points="22,6 12,13 2,6"/></svg><span>Mailbox</span></div><span class="mail-badge">7</span></div>
+    <div class="drawer-item" onclick="toggleDrawer(false)"><div class="drawer-item-left"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="4" y="3" width="16" height="18" rx="2"/><line x1="8" y1="8" x2="16" y2="8"/></svg><span>Journal</span></div></div>
+    <div class="drawer-item" onclick="openSettings()"><div class="drawer-item-left"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="3"/><circle cx="12" cy="12" r="8"/></svg><span>Settings</span></div></div>
+    <div class="drawer-item" onclick="toggleDrawer(false)"><div class="drawer-item-left"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/></svg><span>Economic calendar</span></div><span class="ads-pill">Ads</span></div>
+    <div class="drawer-item" onclick="toggleDrawer(false)"><div class="drawer-item-left"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="9" cy="7" r="3"/><circle cx="16" cy="11" r="2.5"/><path d="M4 19a5 5 0 0 1 10 0"/></svg><span>Traders Community</span></div></div>
+    <div class="drawer-item" onclick="toggleDrawer(false)"><div class="drawer-item-left"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg><span>MQL5 Algo Trading</span></div></div>
+    <div class="drawer-item" onclick="toggleDrawer(false)"><div class="drawer-item-left"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="17" r="1" fill="currentColor"/></svg><span>User guide</span></div></div>
+    <div class="drawer-item" onclick="toggleDrawer(false)"><div class="drawer-item-left"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><line x1="12" y1="11" x2="12" y2="16"/></svg><span>About</span></div></div>
+  </div>
+</aside>
 
-      document.getElementById("lblTodayDate").textContent = fmtShortDate(now);
-      document.getElementById("lblWeekDate").textContent = `${fmtShortDate(weekAgo)} - ${fmtShortDate(now)}`;
-      document.getElementById("lblMonthDate").textContent = `${fmtShortDate(monthAgo)} - ${fmtShortDate(now)}`;
-      document.getElementById("lbl3MonthsDate").textContent = `${fmtShortDate(threeMonthsAgo)} - ${fmtShortDate(now)}`;
+<div class="modal" id="symbolModal">
+  <div class="modal-header"><h3>Select Symbol</h3><button class="icon-btn" onclick="closeSymbolFilter()">✕</button></div>
+  <div class="form-group"><label>Symbol Filter</label><select id="selSymbolFilter" onchange="onSymbolFilterChange()"><option value="ALL">All symbols</option></select></div>
+</div>
 
-      const fVal = document.getElementById("inpFromDate").value;
-      const tVal = document.getElementById("inpToDate").value;
-      if (fVal && tVal) {
-        const fd = new Date(fVal + "T00:00:00");
-        const td = new Date(tVal + "T23:59:59");
-        if (!isNaN(fd.getTime()) && !isNaN(td.getTime())) {
-          document.getElementById("lblCustomDate").textContent = `${fmtShortDate(fd)} - ${fmtShortDate(td)}`;
-        }
-      }
-    }
+<div class="modal" id="settingsModal">
+  <div class="modal-header"><h3>Account & Sync Settings</h3><button class="icon-btn" onclick="closeSettings()">✕</button></div>
+  <div class="form-group"><label>Account Name</label><input type="text" id="inpAccName" placeholder="Client" /></div>
+  <div class="form-group"><label>Account Number & Server</label><input type="text" id="inpAccServer" placeholder="43233923 - Exness-MT5Real2" /></div>
+  <div class="form-group"><label>Firebase Database URL</label><input type="text" id="inpFirebaseUrl" placeholder="https://your-project.firebaseio.com" /></div>
+  <button class="save-btn" onclick="saveSettings()">Save Changes</button>
+</div>
 
-    function refreshHeader() {
-      const isHistory = activeTab === "history";
-      const titleMain = document.getElementById("headerTitle");
-      const titleSub = document.getElementById("topProfit");
-      const tradeActions = document.getElementById("tradeActions");
-      const historyActions = document.getElementById("historyActions");
+<script>
+const iconSvg=`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><rect width="512" height="512" rx="110" fill="#121212"/><circle cx="256" cy="256" r="160" fill="none" stroke="#2b7de9" stroke-width="32"/><path d="M180 300 L230 220 L280 260 L340 180" fill="none" stroke="#ffcf01" stroke-width="32" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+document.getElementById("manifestLink").href="data:application/manifest+json;charset=utf-8,"+encodeURIComponent(JSON.stringify({name:"MetaTrader 5",short_name:"MetaTrader 5",start_url:location.href,display:"standalone",background_color:"#000000",theme_color:"#000000",icons:[{src:"data:image/svg+xml;base64,"+btoa(iconSvg),sizes:"512x512",type:"image/svg+xml"}]}));
 
-      if (isHistory) {
-        titleMain.textContent = "History";
-        titleSub.className = "title-sub-muted";
-        titleSub.textContent = symbolFilter === "ALL" ? "All symbols" : symbolFilter;
-        tradeActions.style.display = "none";
-        historyActions.style.display = "flex";
-      } else {
-        titleMain.textContent = "Trade";
-        tradeActions.style.display = "flex";
-        historyActions.style.display = "none";
-        const profit = Number(latestData.equity || 0) - Number(latestData.balance || 0);
-        titleSub.textContent = `${profit.toFixed(2)} USD`;
-        titleSub.className = `title-sub ${profit < 0 ? "profit-neg" : "profit-pos"}`;
-      }
-    }
+const defaultConfig={accName:"Client",accServer:"43233923 - Exness-MT5Real2",firebaseUrl:""};
+let config=JSON.parse(localStorage.getItem("mt5_custom_config"))||defaultConfig;
+let activeTab="trade",historySubtab="positions",historyPeriod="today",symbolFilter="ALL";
+let latestData={balance:0,equity:0,margin:0,freeMargin:0,marginLevel:0,positions:[],history:[]};
+let serverOffset=-new Date().getTimezoneOffset()*60, lastSig="";
 
-    function switchTab(tab) {
-      activeTab = tab;
-      closePeriodDropdown();
-      const isHistory = tab === "history";
+/* ---- Server-time helpers (MT5 deal times are server clock, stored as pseudo-UTC) ---- */
+const nowSrv=()=>Math.floor(Date.now()/1000+serverOffset);
+const dayStart=s=>Math.floor(s/86400)*86400;
+const fmtDate=s=>{const d=new Date(s*1000);return `${d.getUTCMonth()+1}/${d.getUTCDate()}/${String(d.getUTCFullYear()).slice(-2)}`;};
+const parseDay=v=>{const[a,b,c]=v.split("-").map(Number);return Date.UTC(a,b-1,c)/1000;};
 
-      document.getElementById("tradeView").classList.toggle("active", !isHistory);
-      document.getElementById("historyView").classList.toggle("active", isHistory);
+/* ---- Period icons (calendar variants like real MT5) ---- */
+const PERIODS=[["today","Today"],["week","Last week"],["month","Last month"],["3months","Last 3 months"],["custom","Custom period"]];
+function calIcon(kind,size){
+  const rings='<rect x="7" y="2" width="2.2" height="4.5" rx="1.1" fill="currentColor"/><rect x="14.8" y="2" width="2.2" height="4.5" rx="1.1" fill="currentColor"/>';
+  const dots=(ys)=>ys.map(y=>[7.3,10.4,13.6,16.7].map(x=>`<circle cx="${x}" cy="${y}" r="1" fill="currentColor"/>`).join("")).join("");
+  let body='<rect x="3" y="4.5" width="18" height="16.5" rx="3" fill="none" stroke="currentColor" stroke-width="2"/><rect x="3" y="4.5" width="18" height="4" fill="currentColor"/>',inner="";
+  if(kind==="today")inner=dots([12,15,18]);
+  else if(kind==="week")inner=dots([17]);
+  else if(kind==="month")inner='<rect x="7" y="11.5" width="10" height="5.5" rx="1.5" fill="currentColor"/>';
+  else if(kind==="3months"){body='<rect x="3" y="4.5" width="18" height="16.5" rx="3" fill="currentColor"/>';inner='<text x="12" y="18.2" text-anchor="middle" font-size="10.5" font-weight="700" fill="#2b2c2f" style="font-family:Roboto,Arial,sans-serif">3</text>';}
+  else inner='<circle cx="12" cy="13.2" r="2" fill="currentColor"/><path d="M8.2 19c.3-2.2 1.8-3.3 3.8-3.3s3.5 1.1 3.8 3.3z" fill="currentColor"/>';
+  return `<svg width="${size}" height="${size}" viewBox="0 0 24 24">${rings}${body}${inner}</svg>`;
+}
+const CHECK='<svg class="period-check" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#3d8bf0" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 12.5 9.5 19 21 6"/></svg>';
+function buildDropdown(){
+  document.getElementById("periodDropdown").innerHTML=PERIODS.map(([k,t])=>`
+    <div class="period-option" onclick="selectPeriod('${k}')">
+      <div class="period-left">${calIcon(k,30)}<div><div class="period-title">${t}</div><div class="period-dates" id="lbl-${k}"></div></div></div>
+      ${CHECK.replace('class="period-check"',`class="period-check" id="chk-${k}"`)}
+    </div>`).join("");
+  document.getElementById("chk-"+historyPeriod).style.display="block";
+  document.getElementById("btnPeriod").innerHTML=calIcon(historyPeriod,28);
+}
+function updatePeriodLabels(){
+  const n=nowSrv(),t=dayStart(n);
+  document.getElementById("lbl-today").textContent=fmtDate(t);
+  document.getElementById("lbl-week").textContent=`${fmtDate(t-7*86400)} - ${fmtDate(t)}`;
+  document.getElementById("lbl-month").textContent=`${fmtDate(t-30*86400)} - ${fmtDate(t)}`;
+  document.getElementById("lbl-3months").textContent=`${fmtDate(t-90*86400)} - ${fmtDate(t)}`;
+  const f=document.getElementById("inpFromDate").value,e=document.getElementById("inpToDate").value;
+  if(f&&e)document.getElementById("lbl-custom").textContent=`${fmtDate(parseDay(f))} - ${fmtDate(parseDay(e))}`;
+}
 
-      document.getElementById("navTrade").classList.toggle("active", !isHistory);
-      document.getElementById("navHistory").classList.toggle("active", isHistory);
+function refreshHeader(){
+  const h=activeTab==="history",sub=document.getElementById("topProfit");
+  document.getElementById("tradeActions").style.display=h?"none":"flex";
+  document.getElementById("historyActions").style.display=h?"flex":"none";
+  document.getElementById("headerTitle").textContent=h?"History":"Trade";
+  if(h){sub.className="title-sub-muted";sub.textContent=symbolFilter==="ALL"?"All symbols":symbolFilter;}
+  else{const p=Number(latestData.equity||0)-Number(latestData.balance||0);sub.textContent=`${p.toFixed(2)} USD`;sub.className=`title-sub ${p<0?"profit-neg":"profit-pos"}`;}
+}
+function switchTab(tab){
+  activeTab=tab;closePeriodDropdown();
+  const h=tab==="history";
+  document.getElementById("tradeView").classList.toggle("active",!h);
+  document.getElementById("historyView").classList.toggle("active",h);
+  document.getElementById("navTrade").classList.toggle("active",!h);
+  document.getElementById("navHistory").classList.toggle("active",h);
+  refreshHeader();
+  if(h){updatePeriodLabels();renderHistory(latestData);}
+}
+function togglePeriodDropdown(){
+  const dd=document.getElementById("periodDropdown"),n=!dd.classList.contains("open");
+  dd.classList.toggle("open",n);document.getElementById("periodBackdrop").classList.toggle("open",n);
+}
+function closePeriodDropdown(){
+  document.getElementById("periodDropdown").classList.remove("open");
+  document.getElementById("periodBackdrop").classList.remove("open");
+}
+function selectPeriod(p){
+  historyPeriod=p;
+  PERIODS.forEach(([k])=>document.getElementById("chk-"+k).style.display=k===p?"block":"none");
+  document.getElementById("btnPeriod").innerHTML=calIcon(p,28);
+  document.getElementById("customRangeBox").classList.toggle("open",p==="custom");
+  closePeriodDropdown();renderHistory(latestData);
+}
+function onCustomDateChange(){updatePeriodLabels();if(historyPeriod==="custom")renderHistory(latestData);}
+function setHistorySubtab(s){
+  historySubtab=s;
+  ["positions","orders","deals"].forEach(k=>document.getElementById("subtab"+k[0].toUpperCase()+k.slice(1)).classList.toggle("active",k===s));
+  renderHistory(latestData);
+}
+function scrollHistoryToSummary(){const el=document.getElementById("historySummarySection");if(el.style.display!=="none")el.scrollIntoView({behavior:"smooth",block:"start"});}
+function openSymbolFilter(){
+  const syms=new Set(["ALL"]);
+  (latestData.history||[]).forEach(d=>{if(d.symbol&&String(d.symbol).toLowerCase()!=="balance")syms.add(String(d.symbol));});
+  document.getElementById("selSymbolFilter").innerHTML=[...syms].map(s=>`<option value="${s}" ${s===symbolFilter?"selected":""}>${s==="ALL"?"All symbols":s}</option>`).join("");
+  document.getElementById("symbolModal").classList.add("open");
+}
+function closeSymbolFilter(){document.getElementById("symbolModal").classList.remove("open");}
+function onSymbolFilterChange(){symbolFilter=document.getElementById("selSymbolFilter").value;refreshHeader();closeSymbolFilter();renderHistory(latestData);}
 
-      document.getElementById("iconTrade").setAttribute("stroke", !isHistory ? "#2b7de9" : "currentColor");
-      document.querySelectorAll("#iconTrade circle").forEach(c => c.setAttribute("fill", !isHistory ? "#2b7de9" : "none"));
-      document.getElementById("iconHistory").setAttribute("stroke", isHistory ? "#2b7de9" : "currentColor");
+function applyConfig(){
+  document.getElementById("drawerAccName").textContent=config.accName;
+  document.getElementById("drawerAccServer").textContent=config.accServer;
+  document.getElementById("inpAccName").value=config.accName;
+  document.getElementById("inpAccServer").value=config.accServer;
+  document.getElementById("inpFirebaseUrl").value=config.firebaseUrl;
+}
+function toggleDrawer(o){document.getElementById("sideDrawer").classList.toggle("open",o);document.getElementById("drawerOverlay").classList.toggle("open",o);}
+function openSettings(){toggleDrawer(false);document.getElementById("settingsModal").classList.add("open");}
+function closeSettings(){document.getElementById("settingsModal").classList.remove("open");}
+function saveSettings(){
+  config.accName=document.getElementById("inpAccName").value.trim()||"Client";
+  config.accServer=document.getElementById("inpAccServer").value.trim()||defaultConfig.accServer;
+  config.firebaseUrl=document.getElementById("inpFirebaseUrl").value.trim().replace(/\/$/,"");
+  localStorage.setItem("mt5_custom_config",JSON.stringify(config));applyConfig();closeSettings();
+}
 
-      refreshHeader();
-      if (isHistory) {
-        updatePeriodLabels();
-        renderHistory(latestData);
-      }
-    }
+const formatNum=n=>Number(n||0).toLocaleString("en-US",{minimumFractionDigits:2,maximumFractionDigits:2}).replace(/,/g," ");
+function fmtPrice(v,d){const p=Number(v||0).toFixed(d).split(".");p[0]=p[0].replace(/\B(?=(\d{3})+(?!\d))/g," ");return p.join(".");}
+function dealTime(d){
+  if(d.timeStr)return String(d.timeStr);
+  const t=Number(d.time||0);if(!t)return"";
+  const x=new Date(t*1000),z=n=>String(n).padStart(2,"0");
+  return `${x.getUTCFullYear()}.${z(x.getUTCMonth()+1)}.${z(x.getUTCDate())} ${z(x.getUTCHours())}:${z(x.getUTCMinutes())}:${z(x.getUTCSeconds())}`;
+}
+const ARROW='<svg width="26" height="12" viewBox="0 0 26 12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><line x1="1" y1="6" x2="24" y2="6"/><polyline points="19 1.5 24.5 6 19 10.5"/></svg>';
 
-    function togglePeriodDropdown() {
-      const dd = document.getElementById("periodDropdown");
-      const bd = document.getElementById("periodBackdrop");
-      const next = !dd.classList.contains("open");
-      dd.classList.toggle("open", next);
-      bd.classList.toggle("open", next);
-    }
+function filterDeals(deals){
+  const t=dayStart(nowSrv());let s=0,e=Infinity;
+  if(historyPeriod==="today")s=t;
+  else if(historyPeriod==="week")s=t-7*86400;
+  else if(historyPeriod==="month")s=t-30*86400;
+  else if(historyPeriod==="3months")s=t-90*86400;
+  else{
+    const f=document.getElementById("inpFromDate").value,x=document.getElementById("inpToDate").value;
+    if(f)s=parseDay(f);if(x)e=parseDay(x)+86399;
+  }
+  return deals.filter(d=>{
+    const ts=Number(d.time||0);
+    if(ts<s||ts>e)return false;
+    return symbolFilter==="ALL"||String(d.symbol||"").toLowerCase()===symbolFilter.toLowerCase();
+  }).sort((a,b)=>Number(b.time||0)-Number(a.time||0));
+}
 
-    function closePeriodDropdown() {
-      document.getElementById("periodDropdown").classList.remove("open");
-      document.getElementById("periodBackdrop").classList.remove("open");
-    }
+const EMPTY=`<div class="empty-history"><svg width="128" height="128" viewBox="0 0 64 64"><path fill="#323233" d="M17 6h30q3 0 4 3l7 19v26q0 4-4 4H10q-4 0-4-4V28l7-19q1-3 4-3z"/><path fill="#000" d="M20.5 12h23q2 0 2.800 2.200l4 11.800q.7 2.200-1.800 2.200H40V32q0 5.500-8 5.500T24 32v-3.800H16.500q-2.500 0-1.800-2.200l4-11.800Q19.500 12 20.500 12z"/></svg><div class="empty-history-text">Empty history</div></div>`;
 
-    function selectPeriod(period) {
-      historyPeriod = period;
-      ["today", "week", "month", "3months", "custom"].forEach(p => {
-        const el = document.getElementById("chk-" + p);
-        if (el) el.style.display = (p === period) ? "inline" : "none";
-      });
-      document.getElementById("customRangeBox").classList.toggle("open", period === "custom");
-      closePeriodDropdown();
-      renderHistory(latestData);
-    }
+function renderHistory(data){
+  const deals=filterDeals(Array.isArray(data.history)?data.history:[]);
+  const listEl=document.getElementById("historyList"),sumEl=document.getElementById("historySummarySection");
+  const isTrade=d=>String(d.type||"").toLowerCase()!=="balance";
+  const rows=historySubtab==="positions"?deals.filter(isTrade):historySubtab==="deals"?deals:[];
 
-    function onCustomDateChange() {
-      updatePeriodLabels();
-      if (historyPeriod === "custom") {
-        renderHistory(latestData);
-      }
-    }
+  if(deals.length===0||historySubtab==="orders"){
+    sumEl.style.display="none";listEl.innerHTML=EMPTY;return;
+  }
+  sumEl.style.display="block";
+  let pr=0,dep=0,sw=0,cm=0;
+  deals.forEach(d=>{
+    const p=Number(d.profit??d.total??0);
+    if(!isTrade(d))dep+=p;else{pr+=p;sw+=Number(d.swap||0);cm+=Number(d.commission||0);}
+  });
+  const eP=document.getElementById("histProfit");
+  eP.textContent=formatNum(pr);eP.className=`summary-value ${pr<0?"profit-neg":"profit-pos"}`;
+  document.getElementById("histDeposit").textContent=formatNum(dep);
+  document.getElementById("histSwap").textContent=formatNum(sw);
+  document.getElementById("histCommission").textContent=formatNum(cm);
+  document.getElementById("histBalance").textContent=formatNum(pr+dep+sw+cm);
 
-    function setHistorySubtab(sub) {
-      historySubtab = sub;
-      document.getElementById("subtabPositions").classList.toggle("active", sub === "positions");
-      document.getElementById("subtabOrders").classList.toggle("active", sub === "orders");
-      document.getElementById("subtabDeals").classList.toggle("active", sub === "deals");
-      renderHistory(latestData);
-    }
+  listEl.innerHTML=rows.map(d=>{
+    const type=String(d.type||"").toLowerCase(),bal=type==="balance";
+    const v=bal?Number(d.profit??d.total??0):Number(d.total??d.profit??0);
+    const dg=Number(d.digits??2);
+    const o=d.openPrice!=null?d.openPrice:d.price,c=d.closePrice!=null?d.closePrice:d.price;
+    const title=bal?(v>=0?"Balance (Deposit)":"Balance (Withdrawal)"):`${d.symbol}, <span class="${type==="buy"?"pos-type-buy":"pos-type-sell"}">${type} ${Number(d.volume||0).toFixed(2)}</span>`;
+    return `<div class="position-item"><div class="pos-left"><div class="pos-top">${title}</div>${bal?"":`<div class="pos-prices">${fmtPrice(o,dg)}${ARROW}${fmtPrice(c,dg)}</div>`}</div><div class="pos-right-col"><div class="pos-time">${dealTime(d)}</div><div class="pos-right ${v>=0?"profit-pos":"profit-neg"}">${v.toFixed(2)}</div></div></div>`;
+  }).join("")||EMPTY;
+}
 
-    function scrollHistoryToSummary() {
-      const el = document.getElementById("historySummarySection");
-      if (el && el.style.display !== "none") {
-        el.scrollIntoView({ behavior: "smooth", block: "start" });
-      }
-    }
+function renderData(data){
+  latestData=data;
+  const bal=Number(data.balance||0),eq=Number(data.equity||0),profit=eq-bal;
+  document.getElementById("valBalance").textContent=formatNum(bal);
+  document.getElementById("valEquity").textContent=formatNum(eq);
+  document.getElementById("valMargin").textContent=formatNum(data.margin);
+  document.getElementById("valFreeMargin").textContent=formatNum(data.freeMargin);
+  document.getElementById("valMarginLevel").textContent=formatNum(data.marginLevel);
+  const pill=document.getElementById("navProfitPill");
+  pill.textContent=profit.toFixed(2);pill.className=`nav-badge-pill ${profit<0?"neg":""}`;
+  if(activeTab==="trade"){const t=document.getElementById("topProfit");t.textContent=`${profit.toFixed(2)} USD`;t.className=`title-sub ${profit<0?"profit-neg":"profit-pos"}`;}
 
-    function openSymbolFilter() {
-      const select = document.getElementById("selSymbolFilter");
-      const syms = new Set(["ALL"]);
-      (latestData.history || []).forEach(d => {
-        if (d.symbol && String(d.symbol).toLowerCase() !== "balance") {
-          syms.add(String(d.symbol));
-        }
-      });
-      select.innerHTML = Array.from(syms).map(s =>
-        `<option value="${s}" ${s === symbolFilter ? "selected" : ""}>${s === "ALL" ? "All symbols" : s}</option>`
-      ).join("");
-      document.getElementById("symbolModal").classList.add("open");
-    }
+  const pos=data.positions||[],show=pos.length>0;
+  document.getElementById("positionsHeader").style.display=show?"flex":"none";
+  document.getElementById("rowMargin").style.display=show?"flex":"none";
+  document.getElementById("rowMarginLevel").style.display=show?"flex":"none";
+  document.getElementById("positionsList").innerHTML=pos.map(p=>{
+    const buy=String(p.type).toLowerCase()==="buy",d=Number(p.digits??2);
+    return `<div class="position-item"><div class="pos-left"><div class="pos-top">${p.symbol}, <span class="${buy?"pos-type-buy":"pos-type-sell"}">${p.type} ${Number(p.volume).toFixed(2)}</span></div><div class="pos-prices">${fmtPrice(p.openPrice,d)}${ARROW}${fmtPrice(p.currentPrice,d)}</div></div><div class="pos-right ${Number(p.profit)>=0?"profit-pos":"profit-neg"}">${Number(p.profit).toFixed(2)}</div></div>`;
+  }).join("");
+  if(activeTab==="history")renderHistory(data);
+}
 
-    function closeSymbolFilter() {
-      document.getElementById("symbolModal").classList.remove("open");
-    }
+async function fetchLiveData(){
+  if(!config.firebaseUrl)return;
+  try{
+    const r=await fetch(`${config.firebaseUrl}/mt5data.json`);
+    if(!r.ok)return;
+    const data=await r.json();
+    if(!data)return;
+    if(data.serverTime)serverOffset=Number(data.serverTime)-Date.now()/1000;
+    const sig=JSON.stringify(data);
+    if(sig===lastSig)return;
+    lastSig=sig;renderData(data);
+  }catch(e){}
+}
 
-    function onSymbolFilterChange() {
-      symbolFilter = document.getElementById("selSymbolFilter").value;
-      refreshHeader();
-      closeSymbolFilter();
-      renderHistory(latestData);
-    }
-
-    function applyConfig() {
-      document.getElementById("drawerAccName").textContent = config.accName;
-      document.getElementById("drawerAccServer").textContent = config.accServer;
-      document.getElementById("inpAccName").value = config.accName;
-      document.getElementById("inpAccServer").value = config.accServer;
-      document.getElementById("inpFirebaseUrl").value = config.firebaseUrl;
-    }
-
-    function toggleDrawer(open) {
-      document.getElementById("sideDrawer").classList.toggle("open", open);
-      document.getElementById("drawerOverlay").classList.toggle("open", open);
-    }
-
-    function openSettings() {
-      toggleDrawer(false);
-      document.getElementById("settingsModal").classList.add("open");
-    }
-
-    function closeSettings() {
-      document.getElementById("settingsModal").classList.remove("open");
-    }
-
-    function saveSettings() {
-      config.accName = document.getElementById("inpAccName").value.trim() || "Client";
-      config.accServer = document.getElementById("inpAccServer").value.trim() || "43233923 - Exness-MT5Real2";
-      config.firebaseUrl = document.getElementById("inpFirebaseUrl").value.trim().replace(/\/$/, "");
-      localStorage.setItem("mt5_custom_config", JSON.stringify(config));
-      applyConfig();
-      closeSettings();
-    }
-
-    function formatNum(num) {
-      return Number(num || 0).toLocaleString("en-US", {
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2
-      }).replace(/,/g, " ");
-    }
-
-    function formatPriceSpaced(val, digits) {
-      const fixed = Number(val || 0).toFixed(digits);
-      const parts = fixed.split(".");
-      parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, " ");
-      return parts.join(".");
-    }
-
-    function formatDealTime(d) {
-      if (d.timeStr) return String(d.timeStr);
-      const ts = Number(d.time || 0);
-      if (!ts) return "";
-      const dt = new Date(ts * 1000);
-      if (isNaN(dt.getTime())) return "";
-      const pad = (n) => String(n).padStart(2, "0");
-      return `${dt.getFullYear()}.${pad(dt.getMonth() + 1)}.${pad(dt.getDate())} ${pad(dt.getHours())}:${pad(dt.getMinutes())}:${pad(dt.getSeconds())}`;
-    }
-
-    function filterDeals(deals) {
-      const nowSec = Math.floor(Date.now() / 1000);
-      let startSec = 0;
-      let endSec = Infinity;
-
-      if (historyPeriod === "today") {
-        const s = new Date();
-        s.setHours(0, 0, 0, 0);
-        startSec = Math.floor(s.getTime() / 1000);
-      } else if (historyPeriod === "week") {
-        startSec = nowSec - 7 * 86400;
-      } else if (historyPeriod === "month") {
-        startSec = nowSec - 30 * 86400;
-      } else if (historyPeriod === "3months") {
-        startSec = nowSec - 90 * 86400;
-      } else if (historyPeriod === "custom") {
-        const fVal = document.getElementById("inpFromDate").value;
-        const tVal = document.getElementById("inpToDate").value;
-        if (fVal) startSec = Math.floor(new Date(fVal + "T00:00:00").getTime() / 1000);
-        if (tVal) endSec = Math.floor(new Date(tVal + "T23:59:59").getTime() / 1000);
-      }
-
-      return deals.filter(d => {
-        const t = Number(d.time || 0);
-        if (t < startSec || t > endSec) return false;
-        if (symbolFilter !== "ALL") {
-          return String(d.symbol || "").toLowerCase() === symbolFilter.toLowerCase();
-        }
-        return true;
-      });
-    }
-
-    function renderHistory(data) {
-      const allDeals = Array.isArray(data.history) ? data.history : [];
-      const deals = filterDeals(allDeals);
-      const listEl = document.getElementById("historyList");
-      const summaryEl = document.getElementById("historySummarySection");
-
-      if (deals.length === 0) {
-        summaryEl.style.display = "none";
-        listEl.innerHTML = `
-          <div class="empty-history">
-            <svg width="72" height="72" viewBox="0 0 64 64" fill="#48484a">
-              <path d="M12 10h40l6 16v26a4 4 0 0 1-4 4H10a4 4 0 0 1-4-4V26l6-16zm8 20v6h24v-6H20z"/>
-            </svg>
-            <div class="empty-history-text">Empty history</div>
-          </div>
-        `;
-        return;
-      }
-
-      summaryEl.style.display = "block";
-
-      let profitSum = 0;
-      let depositSum = 0;
-      let swapSum = 0;
-      let commissionSum = 0;
-
-      deals.forEach(d => {
-        const typeStr = String(d.type || "").toLowerCase();
-        const p = Number(d.profit ?? d.total ?? 0);
-        const sw = Number(d.swap || 0);
-        const cm = Number(d.commission || 0);
-
-        if (typeStr === "balance") {
-          depositSum += p;
-        } else {
-          profitSum += p;
-          swapSum += sw;
-          commissionSum += cm;
-        }
-      });
-
-      const netBalanceChange = profitSum + depositSum + swapSum + commissionSum;
-
-      const elProfit = document.getElementById("histProfit");
-      elProfit.textContent = formatNum(profitSum);
-      elProfit.className = `summary-value ${profitSum < 0 ? "profit-neg" : "profit-pos"}`;
-
-      document.getElementById("histDeposit").textContent = formatNum(depositSum);
-      document.getElementById("histSwap").textContent = formatNum(swapSum);
-      document.getElementById("histCommission").textContent = formatNum(commissionSum);
-      document.getElementById("histBalance").textContent = formatNum(netBalanceChange);
-
-      listEl.innerHTML = deals.map(d => {
-        const typeStr = String(d.type || "").toLowerCase();
-        const isBalance = typeStr === "balance";
-        const rowVal = isBalance ? Number(d.profit ?? d.total ?? 0) : Number(d.total ?? d.profit ?? 0);
-        const isPos = rowVal >= 0;
-        const digits = Number(d.digits ?? 2);
-        const timeText = formatDealTime(d);
-
-        const openP = d.openPrice != null ? d.openPrice : d.price;
-        const closeP = d.closePrice != null ? d.closePrice : d.price;
-
-        const titlePart = isBalance
-          ? (rowVal >= 0 ? "Balance (Deposit)" : "Balance (Withdrawal)")
-          : `${d.symbol}, <span class="${typeStr === "buy" ? "pos-type-buy" : "pos-type-sell"}">${typeStr} ${Number(d.volume || 0).toFixed(2)}</span>`;
-
-        const subPart = isBalance
-          ? ""
-          : `${formatPriceSpaced(openP, digits)} → ${formatPriceSpaced(closeP, digits)}`;
-
-        return `
-          <div class="position-item">
-            <div class="pos-left">
-              <div class="pos-top">${titlePart}</div>
-              ${subPart ? `<div class="pos-prices">${subPart}</div>` : ""}
-            </div>
-            <div class="pos-right-col">
-              <div class="pos-time">${timeText}</div>
-              <div class="pos-right ${isPos ? "profit-pos" : "profit-neg"}">
-                ${rowVal >= 0 ? formatNum(rowVal) : '-' + formatNum(Math.abs(rowVal))}
-              </div>
-            </div>
-          </div>
-        `;
-      }).join("");
-    }
-
-    function renderData(data) {
-      latestData = data;
-      const balance = Number(data.balance || 0);
-      const equity = Number(data.equity || 0);
-      const margin = Number(data.margin || 0);
-      const freeMargin = Number(data.freeMargin || 0);
-      const marginLevel = Number(data.marginLevel || 0);
-      const profit = equity - balance;
-
-      document.getElementById("valBalance").textContent = formatNum(balance);
-      document.getElementById("valEquity").textContent = formatNum(equity);
-      document.getElementById("valMargin").textContent = formatNum(margin);
-      document.getElementById("valFreeMargin").textContent = formatNum(freeMargin);
-      document.getElementById("valMarginLevel").textContent = formatNum(marginLevel);
-
-      const navPill = document.getElementById("navProfitPill");
-      navPill.textContent = profit.toFixed(2);
-      navPill.className = `nav-badge-pill ${profit < 0 ? "neg" : ""}`;
-
-      if (activeTab === "trade") {
-        const topProfit = document.getElementById("topProfit");
-        topProfit.textContent = `${profit.toFixed(2)} USD`;
-        topProfit.className = `title-sub ${profit < 0 ? "profit-neg" : "profit-pos"}`;
-      }
-
-      const positions = data.positions || [];
-      const listEl = document.getElementById("positionsList");
-      const posHeader = document.getElementById("positionsHeader");
-      const rowMargin = document.getElementById("rowMargin");
-      const rowMarginLevel = document.getElementById("rowMarginLevel");
-
-      if (positions.length === 0) {
-        posHeader.style.display = "none";
-        rowMargin.style.display = "none";
-        rowMarginLevel.style.display = "none";
-        listEl.innerHTML = "";
-      } else {
-        posHeader.style.display = "flex";
-        rowMargin.style.display = "flex";
-        rowMarginLevel.style.display = "flex";
-        listEl.innerHTML = positions.map(p => {
-          const isBuy = String(p.type).toLowerCase() === "buy";
-          const isPos = Number(p.profit) >= 0;
-          const d = Number(p.digits ?? 2);
-          return `
-            <div class="position-item">
-              <div class="pos-left">
-                <div class="pos-top">
-                  ${p.symbol}, <span class="${isBuy ? 'pos-type-buy' : 'pos-type-sell'}">${p.type} ${Number(p.volume).toFixed(2)}</span>
-                </div>
-                <div class="pos-prices">${formatPriceSpaced(p.openPrice, d)} → ${formatPriceSpaced(p.currentPrice, d)}</div>
-              </div>
-              <div class="pos-right ${isPos ? 'profit-pos' : 'profit-neg'}">
-                ${Number(p.profit).toFixed(2)}
-              </div>
-            </div>
-          `;
-        }).join("");
-      }
-
-      if (activeTab === "history") {
-        renderHistory(data);
-      }
-    }
-
-    async function fetchLiveData() {
-      if (!config.firebaseUrl) return;
-      try {
-        const res = await fetch(`${config.firebaseUrl}/mt5data.json`);
-        if (res.ok) {
-          const data = await res.json();
-          if (data) renderData(data);
-        }
-      } catch (e) {}
-    }
-
-    applyConfig();
-    updatePeriodLabels();
-    renderData({ balance: 0, equity: 0, margin: 0, freeMargin: 0, marginLevel: 0, positions: [], history: [] });
-    setInterval(fetchLiveData, 1000);
-  </script>
+applyConfig();buildDropdown();updatePeriodLabels();renderData(latestData);
+setInterval(fetchLiveData,1000);fetchLiveData();
+</script>
 </body>
 </html>
