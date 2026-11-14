@@ -4,9 +4,11 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <meta name="theme-color" content="#000000" />
+  <meta name="mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <title>MetaTrader 5</title>
+  <link id="manifestLink" rel="manifest" />
   <style>
     :root {
       --bg-black: #000000;
@@ -39,7 +41,6 @@
       overflow: hidden;
     }
 
-    /* Top App Bar */
     .topbar {
       height: 56px;
       padding: 0 16px;
@@ -104,14 +105,12 @@
       padding: 4px;
     }
 
-    /* Main Content Area */
     .content {
       flex: 1;
       overflow-y: auto;
       padding-bottom: 16px;
     }
 
-    /* Account Summary Rows */
     .summary-section {
       padding: 6px 16px 12px 16px;
     }
@@ -143,7 +142,6 @@
       white-space: nowrap;
     }
 
-    /* Positions Header */
     .section-header {
       background-color: #161618;
       padding: 7px 16px;
@@ -155,7 +153,6 @@
       font-weight: 500;
     }
 
-    /* Position Item */
     .position-item {
       padding: 10px 16px;
       border-bottom: 1px solid var(--border-color);
@@ -191,7 +188,6 @@
       font-variant-numeric: tabular-nums;
     }
 
-    /* Bottom Navigation */
     .bottom-nav {
       height: 62px;
       background-color: var(--bg-black);
@@ -250,7 +246,6 @@
       justify-content: center;
     }
 
-    /* Side Drawer */
     .drawer-overlay {
       position: fixed;
       inset: 0;
@@ -382,7 +377,6 @@
       border-radius: 12px;
     }
 
-    /* Settings Modal */
     .modal {
       position: fixed;
       inset: 0;
@@ -460,23 +454,19 @@
       </div>
     </div>
 
-    <!-- Custom Top Icons (Card/Wallet + Sort + New Order) -->
     <div class="topbar-actions">
-      <!-- Wallet / Card Icon (Real Account Feature) -->
       <button class="icon-btn" title="Deposit / Withdraw">
         <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
           <rect x="2" y="5" width="20" height="14" rx="2"></rect>
           <line x1="2" y1="10" x2="22" y2="10"></line>
         </svg>
       </button>
-      <!-- Sort Arrows Icon -->
       <button class="icon-btn" title="Sort">
         <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
           <path d="M7 20V4M7 4L3 8M7 4L11 8"></path>
           <path d="M17 4V20M17 20L13 16M17 20L21 16"></path>
         </svg>
       </button>
-      <!-- New Order (+) Icon -->
       <button class="icon-btn" title="New Order">
         <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
           <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
@@ -523,20 +513,18 @@
       <span>•••</span>
     </div>
 
-    <div id="positionsList">
-      <!-- Positions rendered here dynamically -->
-    </div>
+    <div id="positionsList"></div>
   </main>
 
   <!-- Bottom Navigation -->
   <nav class="bottom-nav">
-    <div class="nav-item" onclick="switchTab(this, 'Quotes')">
+    <div class="nav-item">
       <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
         <path d="M7 20V4M7 4L3 8M7 4L11 8M17 4V20M17 20L13 16M17 20L21 16"></path>
       </svg>
       <span>Quotes</span>
     </div>
-    <div class="nav-item" onclick="switchTab(this, 'Charts')">
+    <div class="nav-item">
       <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
         <rect x="5" y="6" width="4" height="10"></rect>
         <line x1="7" y1="2" x2="7" y2="6"></line>
@@ -547,7 +535,7 @@
       </svg>
       <span>Charts</span>
     </div>
-    <div class="nav-item active" onclick="switchTab(this, 'Trade')">
+    <div class="nav-item active">
       <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#2b7de9" stroke-width="2">
         <polyline points="3 17 9 11 13 15 21 7"></polyline>
         <circle cx="3" cy="17" r="1.5" fill="#2b7de9"></circle>
@@ -557,14 +545,14 @@
       </svg>
       <span id="navProfitPill" class="nav-badge-pill">0.00</span>
     </div>
-    <div class="nav-item" onclick="switchTab(this, 'History')">
+    <div class="nav-item">
       <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
         <circle cx="12" cy="12" r="9"></circle>
         <polyline points="12 7 12 12 15 15"></polyline>
       </svg>
       <span>History</span>
     </div>
-    <div class="nav-item" onclick="switchTab(this, 'Messages')">
+    <div class="nav-item">
       <span class="msg-badge">2</span>
       <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
         <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
@@ -654,17 +642,17 @@
     </div>
 
     <div class="form-group">
-      <label>Account Name (الاسم الظاهر في القائمة)</label>
+      <label>Account Name</label>
       <input type="text" id="inpAccName" placeholder="Client" />
     </div>
 
     <div class="form-group">
-      <label>Account Number & Server (رقم الحساب والسيرفر)</label>
+      <label>Account Number & Server</label>
       <input type="text" id="inpAccServer" placeholder="43233923 - Exness-MT5Real2" />
     </div>
 
     <div class="form-group">
-      <label>Firebase Database URL (اختياري للربط المباشر بالكمبيوتر)</label>
+      <label>Firebase Database URL</label>
       <input type="text" id="inpFirebaseUrl" placeholder="https://your-project.firebaseio.com" />
     </div>
 
@@ -672,7 +660,20 @@
   </div>
 
   <script>
-    // Default Configuration
+    // Inline Fullscreen PWA Manifest & Icon
+    const iconSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><rect width="512" height="512" rx="110" fill="#121212"/><circle cx="256" cy="256" r="160" fill="none" stroke="#2b7de9" stroke-width="32"/><path d="M180 300 L230 220 L280 260 L340 180" fill="none" stroke="#ffcf01" stroke-width="32" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+    const iconUrl = "data:image/svg+xml;base64," + btoa(iconSvg);
+    const manifestObj = {
+      name: "MetaTrader 5",
+      short_name: "MetaTrader 5",
+      start_url: location.href,
+      display: "standalone",
+      background_color: "#000000",
+      theme_color: "#000000",
+      icons: [{ src: iconUrl, sizes: "512x512", type: "image/svg+xml" }]
+    };
+    document.getElementById("manifestLink").href = "data:application/manifest+json;charset=utf-8," + encodeURIComponent(JSON.stringify(manifestObj));
+
     const defaultConfig = {
       accName: "Client",
       accServer: "43233923 - Exness-MT5Real2",
@@ -781,7 +782,6 @@
       }
     }
 
-    // Live Polling Loop
     async function fetchLiveData() {
       if (!config.firebaseUrl) return;
       try {
@@ -790,13 +790,10 @@
           const data = await res.json();
           if (data) renderData(data);
         }
-      } catch (e) {
-        // Silent retry
-      }
+      } catch (e) {}
     }
 
     applyConfig();
-    // Initial sample preview (0.00 state like your screenshot)
     renderData({ balance: 0, equity: 0, margin: 0, freeMargin: 0, marginLevel: 0, positions: [] });
     setInterval(fetchLiveData, 1000);
   </script>
