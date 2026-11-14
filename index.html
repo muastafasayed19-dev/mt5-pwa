@@ -223,7 +223,7 @@ let config=JSON.parse(localStorage.getItem("mt5_custom_config"))||defaultConfig;
 if(!config.firebaseUrl)config.firebaseUrl=defaultConfig.firebaseUrl;
 let activeTab="trade",historySubtab="positions",historyPeriod="today",symbolFilter="ALL";
 let latestData={balance:0,equity:0,margin:0,freeMargin:0,marginLevel:0,positions:[],history:[]};
-let historyCache=[];
+let historyCache=[],histFromNode=false;
 let serverOffset=-new Date().getTimezoneOffset()*60, lastSig="";
 
 /* ---- Server-time helpers (MT5 deal times are server clock, stored as pseudo-UTC) ---- */
@@ -393,6 +393,7 @@ function renderHistory(data){
 }
 
 function renderData(data){
+  if(!histFromNode&&Array.isArray(data.history)&&data.history.length)historyCache=data.history;
   data.history=historyCache;
   latestData=data;
   const bal=Number(data.balance||0),eq=Number(data.equity||0),profit=eq-bal;
@@ -422,7 +423,9 @@ async function fetchHistory(){
     const r=await fetch(`${config.firebaseUrl}/mt5history.json`);
     if(!r.ok)return;
     const d=await r.json();
-    historyCache=Array.isArray(d)?d.filter(Boolean):(d?Object.values(d):[]);
+    const arr=Array.isArray(d)?d.filter(Boolean):(d?Object.values(d):[]);
+    if(!arr.length)return;
+    histFromNode=true;historyCache=arr;
     latestData.history=historyCache;
     if(activeTab==="history")renderHistory(latestData);
   }catch(e){}
