@@ -244,6 +244,13 @@
       font-variant-numeric: tabular-nums;
     }
 
+    .history-empty {
+      padding: 36px 20px;
+      text-align: center;
+      color: var(--text-secondary);
+      font-size: 14px;
+    }
+
     .bottom-nav {
       height: 62px;
       background-color: var(--bg-black);
@@ -584,6 +591,27 @@
     </div>
   </section>
 
+  <!-- History View -->
+  <section class="content" id="historyView">
+    <div class="summary-section">
+      <div class="summary-row">
+        <span class="summary-label">Total Profit:</span>
+        <span class="summary-dots"></span>
+        <span class="summary-value" id="histTotalProfit">0.00</span>
+      </div>
+      <div class="summary-row">
+        <span class="summary-label">Deals Count:</span>
+        <span class="summary-dots"></span>
+        <span class="summary-value" id="histDealsCount">0</span>
+      </div>
+    </div>
+    <div class="section-header">
+      <span>Deals</span>
+      <span>•••</span>
+    </div>
+    <div id="historyList"></div>
+  </section>
+
   <!-- Bottom Navigation -->
   <nav class="bottom-nav">
     <div class="nav-item" id="navQuotes" onclick="switchTab('trade')">
@@ -613,8 +641,8 @@
       </svg>
       <span id="navProfitPill" class="nav-badge-pill">0.00</span>
     </div>
-    <div class="nav-item" id="navHistory" onclick="switchTab('trade')">
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+    <div class="nav-item" id="navHistory" onclick="switchTab('history')">
+      <svg id="iconHistory" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
         <circle cx="12" cy="12" r="9"></circle>
         <polyline points="12 7 12 12 15 15"></polyline>
       </svg>
@@ -661,6 +689,15 @@
             <line x1="17" y1="18" x2="17" y2="22"></line>
           </svg>
           <span>Charts</span>
+        </div>
+      </div>
+      <div class="drawer-item" onclick="switchTab('history'); toggleDrawer(false)">
+        <div class="drawer-item-left">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+            <circle cx="12" cy="12" r="9"></circle>
+            <polyline points="12 7 12 12 15 15"></polyline>
+          </svg>
+          <span>History</span>
         </div>
       </div>
       <div class="drawer-item" onclick="toggleDrawer(false)">
@@ -762,25 +799,33 @@
 
     let config = JSON.parse(localStorage.getItem("mt5_custom_config")) || defaultConfig;
     let activeTab = "trade";
-    let latestData = { balance: 0, equity: 0, margin: 0, freeMargin: 0, marginLevel: 0, positions: [], candles: [], chart: null };
+    let latestData = { balance: 0, equity: 0, margin: 0, freeMargin: 0, marginLevel: 0, positions: [], candles: [], history: [], chart: null };
 
     function switchTab(tab) {
       activeTab = tab;
       const isCharts = tab === "charts";
+      const isHistory = tab === "history";
+      const isTrade = !isCharts && !isHistory;
 
-      document.getElementById("tradeView").classList.toggle("active", !isCharts);
+      document.getElementById("tradeView").classList.toggle("active", isTrade);
       document.getElementById("chartView").classList.toggle("active", isCharts);
-      document.getElementById("headerTitle").textContent = isCharts ? "Charts" : "Trade";
+      document.getElementById("historyView").classList.toggle("active", isHistory);
 
-      document.getElementById("navTrade").classList.toggle("active", !isCharts);
+      document.getElementById("headerTitle").textContent = isCharts ? "Charts" : (isHistory ? "History" : "Trade");
+
+      document.getElementById("navTrade").classList.toggle("active", isTrade);
       document.getElementById("navCharts").classList.toggle("active", isCharts);
+      document.getElementById("navHistory").classList.toggle("active", isHistory);
 
-      document.getElementById("iconTrade").setAttribute("stroke", !isCharts ? "#2b7de9" : "currentColor");
-      document.querySelectorAll("#iconTrade circle").forEach(c => c.setAttribute("fill", !isCharts ? "#2b7de9" : "none"));
+      document.getElementById("iconTrade").setAttribute("stroke", isTrade ? "#2b7de9" : "currentColor");
+      document.querySelectorAll("#iconTrade circle").forEach(c => c.setAttribute("fill", isTrade ? "#2b7de9" : "none"));
       document.getElementById("iconCharts").setAttribute("stroke", isCharts ? "#2b7de9" : "currentColor");
+      document.getElementById("iconHistory").setAttribute("stroke", isHistory ? "#2b7de9" : "currentColor");
 
       if (isCharts) {
         setTimeout(() => drawChart(latestData), 30);
+      } else if (isHistory) {
+        renderHistory(latestData);
       }
     }
 
@@ -822,10 +867,18 @@
       }).replace(/,/g, " ");
     }
 
+    function formatDealTime(ts) {
+      if (!ts) return "";
+      const d = new Date(Number(ts) * 1000);
+      if (isNaN(d.getTime())) return "";
+      const pad = (n) => String(n).padStart(2, "0");
+      return `${d.getFullYear()}.${pad(d.getMonth() + 1)}.${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
+    }
+
     function drawChart(data) {
       const canvas = document.getElementById("mt5ChartCanvas");
       const emptyMsg = document.getElementById("chartEmptyMsg");
-      const candles = Array.isArray(data.candles) ? data.candles : [];
+      const allCandles = Array.isArray(data.candles) ? data.candles : [];
       const chartInfo = data.chart || {};
       const digits = Number(chartInfo.digits ?? 2);
 
@@ -834,7 +887,7 @@
       document.getElementById("chartBidAsk").textContent =
         (chartInfo.bid != null) ? `Bid: ${Number(chartInfo.bid).toFixed(digits)} | Ask: ${Number(chartInfo.ask ?? chartInfo.bid).toFixed(digits)}` : "--";
 
-      if (candles.length === 0) {
+      if (allCandles.length === 0) {
         emptyMsg.style.display = "flex";
         return;
       }
@@ -842,8 +895,8 @@
 
       const rect = canvas.parentElement.getBoundingClientRect();
       const dpr = window.devicePixelRatio || 1;
-      const w = Math.max(100, Math.floor(rect.width));
-      const h = Math.max(100, Math.floor(rect.height));
+      const w = Math.max(120, Math.floor(rect.width));
+      const h = Math.max(120, Math.floor(rect.height));
       canvas.width = w * dpr;
       canvas.height = h * dpr;
 
@@ -851,11 +904,14 @@
       ctx.scale(dpr, dpr);
       ctx.clearRect(0, 0, w, h);
 
-      const rightAxisW = 64;
+      const rightAxisW = 74;
       const padTop = 14;
       const padBottom = 18;
-      const plotW = Math.max(40, w - rightAxisW);
-      const plotH = Math.max(40, h - padTop - padBottom);
+      const plotW = Math.max(60, w - rightAxisW);
+      const plotH = Math.max(60, h - padTop - padBottom);
+
+      const maxVisible = Math.max(24, Math.floor(plotW / 7));
+      const candles = allCandles.slice(-maxVisible);
 
       const symPositions = (data.positions || []).filter(p =>
         !chartInfo.symbol || String(p.symbol).toLowerCase() === String(chartInfo.symbol).toLowerCase()
@@ -881,11 +937,10 @@
 
       const priceToY = (price) => padTop + (1 - (price - minP) / (maxP - minP)) * plotH;
 
-      // Grid lines & right price scale
       ctx.strokeStyle = "#18181b";
       ctx.lineWidth = 1;
       ctx.fillStyle = "#8e8e93";
-      ctx.font = "11px -apple-system, sans-serif";
+      ctx.font = "10.5px -apple-system, sans-serif";
       ctx.textAlign = "left";
       ctx.textBaseline = "middle";
 
@@ -898,12 +953,11 @@
         ctx.moveTo(0, y);
         ctx.lineTo(plotW, y);
         ctx.stroke();
-        ctx.fillText(price.toFixed(digits), plotW + 5, y);
+        ctx.fillText(price.toFixed(digits), plotW + 4, y);
       }
 
-      // Draw Candlesticks
       const slotW = plotW / candles.length;
-      const bodyW = Math.max(2, Math.min(10, slotW * 0.65));
+      const bodyW = Math.max(3, Math.min(12, slotW * 0.68));
 
       candles.forEach((c, idx) => {
         const xCenter = idx * slotW + slotW / 2;
@@ -929,7 +983,6 @@
         ctx.fillRect(xCenter - bodyW / 2, topY, bodyW, boxH);
       });
 
-      // Draw Open Positions lines on chart
       symPositions.forEach(p => {
         const op = Number(p.openPrice);
         if (isNaN(op)) return;
@@ -962,6 +1015,59 @@
         ctx.textBaseline = "middle";
         ctx.fillText(label, boxX + 5, boxY + 7.5);
       });
+    }
+
+    function renderHistory(data) {
+      const deals = Array.isArray(data.history) ? data.history : [];
+      const listEl = document.getElementById("historyList");
+      const countEl = document.getElementById("histDealsCount");
+      const totalProfitEl = document.getElementById("histTotalProfit");
+
+      countEl.textContent = String(deals.length);
+
+      let totalProfit = 0;
+      deals.forEach(d => {
+        if (String(d.type).toLowerCase() !== "balance") {
+          totalProfit += Number(d.profit || 0);
+        }
+      });
+
+      totalProfitEl.textContent = formatNum(totalProfit);
+      totalProfitEl.className = `summary-value ${totalProfit >= 0 ? "profit-pos" : "profit-neg"}`;
+
+      if (deals.length === 0) {
+        listEl.innerHTML = `<div class="history-empty">No history deals found in MT5.</div>`;
+        return;
+      }
+
+      listEl.innerHTML = deals.map(d => {
+        const typeStr = String(d.type || "").toLowerCase();
+        const isBalance = typeStr === "balance";
+        const profit = Number(d.profit || 0);
+        const isPos = profit >= 0;
+        const digits = Number(d.digits ?? 2);
+        const timeText = formatDealTime(d.time);
+
+        const titlePart = isBalance
+          ? `Balance`
+          : `${d.symbol}, <span class="${typeStr === "buy" ? "pos-type-buy" : "pos-type-sell"}">${typeStr} ${Number(d.volume || 0).toFixed(2)}</span>`;
+
+        const subPart = isBalance
+          ? `${timeText}`
+          : `${Number(d.price || 0).toFixed(digits)}${timeText ? " • " + timeText : ""}`;
+
+        return `
+          <div class="position-item">
+            <div class="pos-left">
+              <div class="pos-top">${titlePart}</div>
+              <div class="pos-prices">${subPart}</div>
+            </div>
+            <div class="pos-right ${isPos ? "profit-pos" : "profit-neg"}">
+              ${profit.toFixed(2)}
+            </div>
+          </div>
+        `;
+      }).join("");
     }
 
     function renderData(data) {
@@ -1029,6 +1135,8 @@
 
       if (activeTab === "charts") {
         drawChart(data);
+      } else if (activeTab === "history") {
+        renderHistory(data);
       }
     }
 
@@ -1048,7 +1156,7 @@
     });
 
     applyConfig();
-    renderData({ balance: 0, equity: 0, margin: 0, freeMargin: 0, marginLevel: 0, positions: [], candles: [] });
+    renderData({ balance: 0, equity: 0, margin: 0, freeMargin: 0, marginLevel: 0, positions: [], candles: [], history: [] });
     setInterval(fetchLiveData, 1000);
   </script>
 </body>
