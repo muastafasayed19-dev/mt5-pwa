@@ -59,6 +59,7 @@ body{background:var(--bg);color:var(--tx);height:100dvh;display:flex;flex-direct
 .pos-type-buy{color:var(--blue);font-weight:500}.pos-type-sell{color:var(--red);font-weight:500}
 .pos-prices{font-size:17px;font-weight:500;color:#d4d4d8;font-variant-numeric:tabular-nums;display:flex;align-items:center;gap:7px;line-height:1.3;white-space:nowrap}
 .pos-right-col{display:flex;flex-direction:column;align-items:flex-end;gap:1px;flex-shrink:0}
+.arr{display:inline-block;width:26px;height:12px;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='26' height='12' viewBox='0 0 26 12' fill='none' stroke='%23d4d4d8' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cline x1='1' y1='6' x2='24' y2='6'/%3E%3Cpolyline points='19 1.5 24.5 6 19 10.5'/%3E%3C/svg%3E") no-repeat center}
 .pos-time{font-size:15px;color:#a0a0a5;font-variant-numeric:tabular-nums;line-height:1.3}
 .pos-right{font-size:16px;font-weight:700;font-variant-numeric:tabular-nums;line-height:1.3}
 .bottom-nav{height:62px;border-top:1px solid #161618;display:flex;align-items:center;flex-shrink:0;padding:4px 0 6px}
@@ -223,7 +224,7 @@ let config=JSON.parse(localStorage.getItem("mt5_custom_config"))||defaultConfig;
 if(!config.firebaseUrl)config.firebaseUrl=defaultConfig.firebaseUrl;
 let activeTab="trade",historySubtab="positions",historyPeriod="today",symbolFilter="ALL";
 let latestData={balance:0,equity:0,margin:0,freeMargin:0,marginLevel:0,positions:[],history:[]};
-let historyCache=[],histFromNode=false;
+let historyCache=[],histFromNode=false,lastHistSig="";
 let serverOffset=-new Date().getTimezoneOffset()*60, lastSig="";
 
 /* ---- Server-time helpers (MT5 deal times are server clock, stored as pseudo-UTC) ---- */
@@ -339,7 +340,7 @@ function dealTime(d){
   const x=new Date(t*1000),z=n=>String(n).padStart(2,"0");
   return `${x.getUTCFullYear()}.${z(x.getUTCMonth()+1)}.${z(x.getUTCDate())} ${z(x.getUTCHours())}:${z(x.getUTCMinutes())}:${z(x.getUTCSeconds())}`;
 }
-const ARROW='<svg width="26" height="12" viewBox="0 0 26 12" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><line x1="1" y1="6" x2="24" y2="6"/><polyline points="19 1.5 24.5 6 19 10.5"/></svg>';
+const ARROW='<i class="arr"></i>';
 
 function filterDeals(deals){
   const t=dayStart(nowSrv());let s=0,e=Infinity;
@@ -382,15 +383,27 @@ function renderHistory(data){
   document.getElementById("histCommission").textContent=formatNum(cm);
   document.getElementById("histBalance").textContent=formatNum(pr+dep+sw+cm);
 
-  listEl.innerHTML=rows.map(d=>{
+  viewRows=rows;shown=0;listEl.innerHTML="";
+  if(!rows.length){listEl.innerHTML=EMPTY;return;}
+  appendRows();
+}
+const PAGE=50;let viewRows=[],shown=0;
+function rowHtml(d){
     const type=String(d.type||"").toLowerCase(),bal=type==="balance";
     const v=bal?Number(d.profit??d.total??0):Number(d.total??d.profit??0);
     const dg=Number(d.digits??2);
     const o=d.openPrice!=null?d.openPrice:d.price,c=d.closePrice!=null?d.closePrice:d.price;
     const title=bal?(v>=0?"Balance (Deposit)":"Balance (Withdrawal)"):`${d.symbol}, <span class="${type==="buy"?"pos-type-buy":"pos-type-sell"}">${type} ${Number(d.volume||0).toFixed(2)}</span>`;
     return `<div class="position-item"><div class="pos-left"><div class="pos-top">${title}</div>${bal?"":`<div class="pos-prices">${fmtPrice(o,dg)}${ARROW}${fmtPrice(c,dg)}</div>`}</div><div class="pos-right-col"><div class="pos-time">${dealTime(d)}</div><div class="pos-right ${v>=0?"profit-pos":"profit-neg"}">${v.toFixed(2)}</div></div></div>`;
-  }).join("")||EMPTY;
 }
+function appendRows(){
+  if(shown>=viewRows.length)return;
+  const next=viewRows.slice(shown,shown+PAGE);shown+=next.length;
+  document.getElementById("historyList").insertAdjacentHTML("beforeend",next.map(rowHtml).join(""));
+}
+document.getElementById("historyView").addEventListener("scroll",function(){
+  if(this.scrollTop+this.clientHeight>=this.scrollHeight-600)appendRows();
+},{passive:true});
 
 function renderData(data){
   if(!histFromNode&&Array.isArray(data.history)&&data.history.length)historyCache=data.history;
@@ -414,7 +427,6 @@ function renderData(data){
     const buy=String(p.type).toLowerCase()==="buy",d=Number(p.digits??2);
     return `<div class="position-item"><div class="pos-left"><div class="pos-top">${p.symbol}, <span class="${buy?"pos-type-buy":"pos-type-sell"}">${p.type} ${Number(p.volume).toFixed(2)}</span></div><div class="pos-prices">${fmtPrice(p.openPrice,d)}${ARROW}${fmtPrice(p.currentPrice,d)}</div></div><div class="pos-right ${Number(p.profit)>=0?"profit-pos":"profit-neg"}">${Number(p.profit).toFixed(2)}</div></div>`;
   }).join("");
-  if(activeTab==="history")renderHistory(data);
 }
 
 async function fetchHistory(){
@@ -425,7 +437,9 @@ async function fetchHistory(){
     const d=await r.json();
     const arr=Array.isArray(d)?d.filter(Boolean):(d?Object.values(d):[]);
     if(!arr.length)return;
-    histFromNode=true;historyCache=arr;
+    const hs=arr.length+"|"+(arr[0]&&arr[0].time)+"|"+(arr[arr.length-1]&&arr[arr.length-1].time);
+    if(histFromNode&&hs===lastHistSig)return;
+    lastHistSig=hs;histFromNode=true;historyCache=arr;
     latestData.history=historyCache;
     if(activeTab==="history")renderHistory(latestData);
   }catch(e){}
