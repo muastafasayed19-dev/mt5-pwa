@@ -233,7 +233,7 @@ function applyTheme(){
   document.documentElement.style.backgroundColor=bg;
 }
 applyTheme();(mq.addEventListener?mq.addEventListener("change",applyTheme):mq.addListener(applyTheme));
-document.getElementById("manifestLink").href="data:application/manifest+json;charset=utf-8,"+encodeURIComponent(JSON.stringify({name:"MetaTrader 5",short_name:"MetaTrader 5",start_url:location.href,display:"fullscreen",display_override:["fullscreen","standalone"],background_color:mq.matches?"#ffffff":"#000000",theme_color:mq.matches?"#ffffff":"#000000",icons:[{src:"data:image/svg+xml;base64,"+btoa(iconSvg),sizes:"512x512",type:"image/svg+xml"}]}));
+document.getElementById("manifestLink").href="data:application/manifest+json;charset=utf-8,"+encodeURIComponent(JSON.stringify({name:"MetaTrader 5",short_name:"MetaTrader 5",start_url:location.href,display:"standalone",background_color:mq.matches?"#ffffff":"#000000",theme_color:mq.matches?"#ffffff":"#000000",icons:[{src:"data:image/svg+xml;base64,"+btoa(iconSvg),sizes:"512x512",type:"image/svg+xml"}]}));
 
 const defaultConfig={accName:"Client",accServer:"43233923 - Exness-MT5Real2",firebaseUrl:"https://muastafa-default-rtdb.firebaseio.com"};
 let config=JSON.parse(localStorage.getItem("mt5_custom_config"))||defaultConfig;
