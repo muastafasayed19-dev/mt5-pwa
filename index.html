@@ -16,8 +16,8 @@
 <link href="https://fonts.googleapis.com/css2?family=Roboto+Condensed:wght@400;500;600;700&display=swap" rel="stylesheet" />
 <link id="manifestLink" rel="manifest" />
 <style>
-:root{color-scheme:dark light;--bg:#000;--menu:#2b2c2f;--drawer:#0d0d0f;--pill:#232325;--tx:#fff;--tx2:#8e8e93;--blue:#3a86ec;--red:#ec5b5f;--line:#2a2a2d;--menuline:#3a3c42;--yellow:#ffcf01;--dots:#55555a;--sect:#161618;--price:#d4d4d8;--time:#a0a0a5;--inbg:var(--inbg);--inbd:var(--inbd);--pillb:#1c2738;--pillr:#3a1e20;--emp:#323233}
-@media (prefers-color-scheme:light){:root{--bg:#fff;--menu:#f4f4f7;--drawer:#fff;--pill:#e8e8ee;--tx:#000;--tx2:#6e6e73;--blue:#1e6fe6;--red:#e03e43;--line:#dedee3;--menuline:#dcdce2;--dots:#b4b4ba;--sect:#f0f0f4;--price:#55555b;--time:#6e6e73;--inbg:#f2f2f6;--inbd:#d0d0d8;--pillb:#e3edfc;--pillr:#fde4e5;--emp:#e1e1e6}}
+:root{color-scheme:dark light;--bg:#000;--menu:#2b2c2f;--drawer:#0d0d0f;--pill:#232325;--tx:#fff;--tx2:#8e8e93;--blue:#3a86ec;--red:#ec5b5f;--line:#2a2a2d;--menuline:#3a3c42;--jm:#1e6fe6;--dots:#55555a;--sect:#161618;--price:#d4d4d8;--time:#a0a0a5;--inbg:#1c1c1e;--inbd:#343438;--pillb:#1c2738;--pillr:#3a1e20;--emp:#323233}
+@media (prefers-color-scheme:light){:root{--bg:#fff;--menu:#f4f4f7;--drawer:#fff;--pill:#e8e8ee;--tx:#000;--tx2:#6e6e73;--blue:#1e6fe6;--red:#e03e43;--line:#dedee3;--menuline:#dcdce2;--jm:#1e6fe6;--dots:#b4b4ba;--sect:#f0f0f4;--price:#55555b;--time:#6e6e73;--inbg:#f2f2f6;--inbd:#d0d0d8;--pillb:#e3edfc;--pillr:#fde4e5;--emp:#e1e1e6}}
 html{background:var(--bg)}
 *{box-sizing:border-box;margin:0;padding:0;font-family:"Roboto Condensed","Arial Narrow",Roboto,-apple-system,"Segoe UI",Helvetica,Arial,sans-serif;-webkit-tap-highlight-color:transparent;user-select:none}
 body{background:var(--bg);color:var(--tx);height:100dvh;display:flex;flex-direction:column;overflow:hidden}
@@ -81,9 +81,9 @@ body{background:var(--bg);color:var(--tx);height:100dvh;display:flex;flex-direct
 .drawer{position:fixed;top:0;left:0;bottom:0;width:84%;max-width:340px;background:var(--drawer);z-index:100;transform:translateX(-100%);transition:transform .25s cubic-bezier(.2,.8,.2,1);display:flex;flex-direction:column;padding:calc(18px + env(safe-area-inset-top,0px)) 12px 20px;overflow-y:auto}
 .drawer.open{transform:none}
 .drawer-header{display:flex;gap:14px;padding:4px 8px 16px;border-bottom:1px solid var(--line)}
-.broker-logo{width:44px;height:44px;background:var(--yellow);border-radius:4px;display:flex;align-items:center;justify-content:center;color:#000;font-weight:800;font-size:11px;flex-shrink:0}
+.broker-logo{width:44px;height:44px;background:var(--jm);border-radius:8px;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:16px;letter-spacing:.4px;flex-shrink:0}
 .account-info{display:flex;flex-direction:column;gap:3px;overflow:hidden}
-.acc-name{font-size:16px;font-weight:500}
+.acc-name{font-size:16px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .acc-server{font-size:13px;color:var(--tx2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .manage-link{color:#4a90e2;font-size:14.5px;margin-top:8px;cursor:pointer}
 .drawer-menu{display:flex;flex-direction:column;gap:2px;margin-top:8px}
@@ -110,7 +110,7 @@ body{background:var(--bg);color:var(--tx);height:100dvh;display:flex;flex-direct
     </button>
     <div class="title-group">
       <span class="title-main" id="headerTitle">Trade</span>
-      <span id="topProfit" class="title-sub profit-pos">0.00 USD</span>
+      <span id="topProfit" class="title-sub profit-pos">0.00 USC</span>
     </div>
   </div>
 
@@ -190,9 +190,9 @@ body{background:var(--bg);color:var(--tx);height:100dvh;display:flex;flex-direct
 <div class="drawer-overlay" id="drawerOverlay" onclick="toggleDrawer(false)"></div>
 <aside class="drawer" id="sideDrawer">
   <div class="drawer-header">
-    <div class="broker-logo">exness</div>
+    <div class="broker-logo">JM</div>
     <div class="account-info">
-      <div class="acc-name" id="drawerAccName">Client</div>
+      <div class="acc-name" id="drawerAccName">moustafa Sayed Mohamed</div>
       <div class="acc-server" id="drawerAccServer"></div>
       <div class="manage-link" onclick="openSettings()">Manage accounts</div>
     </div>
@@ -218,14 +218,15 @@ body{background:var(--bg);color:var(--tx);height:100dvh;display:flex;flex-direct
 
 <div class="modal" id="settingsModal">
   <div class="modal-header"><h3>Account & Sync Settings</h3><button class="icon-btn" onclick="closeSettings()">✕</button></div>
-  <div class="form-group"><label>Account Name</label><input type="text" id="inpAccName" placeholder="Client" /></div>
-  <div class="form-group"><label>Account Number & Server</label><input type="text" id="inpAccServer" placeholder="43233923 - Exness-MT5Real2" /></div>
+  <div class="form-group"><label>Account Name</label><input type="text" id="inpAccName" placeholder="moustafa Sayed Mohamed" /></div>
+  <div class="form-group"><label>Account Number & Server</label><input type="text" id="inpAccServer" placeholder="1200560142 - JustMarkets-Cent" /></div>
+  <div class="form-group"><label>Currency</label><input type="text" id="inpCurrency" placeholder="USC" /></div>
   <div class="form-group"><label>Firebase Database URL</label><input type="text" id="inpFirebaseUrl" placeholder="https://your-project.firebaseio.com" /></div>
   <button class="save-btn" onclick="saveSettings()">Save Changes</button>
 </div>
 
 <script>
-const iconSvg=`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><rect width="512" height="512" rx="110" fill="#121212"/><circle cx="256" cy="256" r="160" fill="none" stroke="#2b7de9" stroke-width="32"/><path d="M180 300 L230 220 L280 260 L340 180" fill="none" stroke="#ffcf01" stroke-width="32" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+const iconSvg=`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><rect width="512" height="512" rx="110" fill="#121212"/><circle cx="256" cy="256" r="160" fill="none" stroke="#2b7de9" stroke-width="32"/><path d="M180 300 L230 220 L280 260 L340 180" fill="none" stroke="#1e6fe6" stroke-width="32" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
 const mq=window.matchMedia("(prefers-color-scheme: light)");
 function applyTheme(){
   const bg=mq.matches?"#ffffff":"#000000";
@@ -235,9 +236,10 @@ function applyTheme(){
 applyTheme();(mq.addEventListener?mq.addEventListener("change",applyTheme):mq.addListener(applyTheme));
 document.getElementById("manifestLink").href="data:application/manifest+json;charset=utf-8,"+encodeURIComponent(JSON.stringify({name:"MetaTrader 5",short_name:"MetaTrader 5",start_url:location.href,display:"standalone",background_color:mq.matches?"#ffffff":"#000000",theme_color:mq.matches?"#ffffff":"#000000",icons:[{src:"data:image/svg+xml;base64,"+btoa(iconSvg),sizes:"512x512",type:"image/svg+xml"}]}));
 
-const defaultConfig={accName:"Client",accServer:"43233923 - Exness-MT5Real2",firebaseUrl:"https://muastafa-default-rtdb.firebaseio.com"};
+const defaultConfig={accName:"moustafa Sayed Mohamed",accServer:"1200560142 - JustMarkets-Cent",currency:"USC",firebaseUrl:"https://muastafa-default-rtdb.firebaseio.com"};
 let config=JSON.parse(localStorage.getItem("mt5_custom_config"))||defaultConfig;
 if(!config.firebaseUrl)config.firebaseUrl=defaultConfig.firebaseUrl;
+if(!config.currency)config.currency=defaultConfig.currency;
 let activeTab="trade",historySubtab="positions",historyPeriod="today",symbolFilter="ALL";
 let latestData={balance:0,equity:0,margin:0,freeMargin:0,marginLevel:0,positions:[],history:[]};
 let historyCache=[],histFromNode=false,lastHistSig="";
@@ -288,7 +290,7 @@ function refreshHeader(){
   document.getElementById("historyActions").style.display=h?"flex":"none";
   document.getElementById("headerTitle").textContent=h?"History":"Trade";
   if(h){sub.className="title-sub-muted";sub.textContent=symbolFilter==="ALL"?"All symbols":symbolFilter;}
-  else{const p=Number(latestData.equity||0)-Number(latestData.balance||0);sub.textContent=`${p.toFixed(2)} USD`;sub.className=`title-sub ${p<0?"profit-neg":"profit-pos"}`;}
+  else{const p=Number(latestData.equity||0)-Number(latestData.balance||0);sub.textContent=`${p.toFixed(2)} ${config.currency}`;sub.className=`title-sub ${p<0?"profit-neg":"profit-pos"}`;}
 }
 function switchTab(tab){
   activeTab=tab;closePeriodDropdown();
@@ -336,14 +338,17 @@ function applyConfig(){
   document.getElementById("drawerAccServer").textContent=config.accServer;
   document.getElementById("inpAccName").value=config.accName;
   document.getElementById("inpAccServer").value=config.accServer;
+  document.getElementById("inpCurrency").value=config.currency;
   document.getElementById("inpFirebaseUrl").value=config.firebaseUrl;
+  refreshHeader();
 }
 function toggleDrawer(o){document.getElementById("sideDrawer").classList.toggle("open",o);document.getElementById("drawerOverlay").classList.toggle("open",o);}
 function openSettings(){toggleDrawer(false);document.getElementById("settingsModal").classList.add("open");}
 function closeSettings(){document.getElementById("settingsModal").classList.remove("open");}
 function saveSettings(){
-  config.accName=document.getElementById("inpAccName").value.trim()||"Client";
+  config.accName=document.getElementById("inpAccName").value.trim()||defaultConfig.accName;
   config.accServer=document.getElementById("inpAccServer").value.trim()||defaultConfig.accServer;
+  config.currency=(document.getElementById("inpCurrency").value.trim()||defaultConfig.currency).toUpperCase();
   config.firebaseUrl=document.getElementById("inpFirebaseUrl").value.trim().replace(/\/$/,"");
   localStorage.setItem("mt5_custom_config",JSON.stringify(config));applyConfig();closeSettings();
 }
@@ -435,7 +440,7 @@ function renderData(data){
   document.getElementById("valMarginLevel").textContent=formatNum(data.marginLevel);
   const pill=document.getElementById("navProfitPill");
   pill.textContent=profit.toFixed(2);pill.className=`nav-badge-pill ${profit<0?"neg":""}`;
-  if(activeTab==="trade"){const t=document.getElementById("topProfit");t.textContent=`${profit.toFixed(2)} USD`;t.className=`title-sub ${profit<0?"profit-neg":"profit-pos"}`;}
+  if(activeTab==="trade"){const t=document.getElementById("topProfit");t.textContent=`${profit.toFixed(2)} ${config.currency}`;t.className=`title-sub ${profit<0?"profit-neg":"profit-pos"}`;}
 
   const pos=data.positions||[],show=pos.length>0;
   document.getElementById("positionsHeader").style.display=show?"flex":"none";
