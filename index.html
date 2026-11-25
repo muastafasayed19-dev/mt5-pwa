@@ -16,8 +16,8 @@
 <link href="https://fonts.googleapis.com/css2?family=Roboto+Condensed:wght@400;500;600;700&display=swap" rel="stylesheet" />
 <link id="manifestLink" rel="manifest" />
 <style>
-:root{color-scheme:dark light;--bg:#000;--menu:#2b2c2f;--drawer:#0d0d0f;--pill:#232325;--tx:#fff;--tx2:#8e8e93;--blue:#3a86ec;--red:#ec5b5f;--line:#2a2a2d;--menuline:#3a3c42;--jm:#1e6fe6;--dots:#55555a;--sect:#161618;--price:#d4d4d8;--time:#a0a0a5;--inbg:#1c1c1e;--inbd:#343438;--pillb:#1c2738;--pillr:#3a1e20;--emp:#323233}
-@media (prefers-color-scheme:light){:root{--bg:#fff;--menu:#f4f4f7;--drawer:#fff;--pill:#e8e8ee;--tx:#000;--tx2:#6e6e73;--blue:#1e6fe6;--red:#e03e43;--line:#dedee3;--menuline:#dcdce2;--jm:#1e6fe6;--dots:#b4b4ba;--sect:#f0f0f4;--price:#55555b;--time:#6e6e73;--inbg:#f2f2f6;--inbd:#d0d0d8;--pillb:#e3edfc;--pillr:#fde4e5;--emp:#e1e1e6}}
+:root{color-scheme:dark light;--bg:#000;--menu:#2b2c2f;--drawer:#000;--navicon:#c4c4c8;--pill:#232325;--tx:#fff;--tx2:#8e8e93;--blue:#3a86ec;--red:#ec5b5f;--line:#2a2a2d;--menuline:#3a3c42;--yellow:#ffcf01;--dots:#55555a;--sect:#161618;--price:#d4d4d8;--time:#a0a0a5;--inbg:#1c1c1e;--inbd:#2c2c2e;--pillb:#1c2738;--pillr:#3a1e20;--emp:#323233}
+@media (prefers-color-scheme:light){:root{--bg:#fff;--menu:#f4f4f7;--drawer:#fff;--pill:#e8e8ee;--tx:#000;--tx2:#6e6e73;--blue:#1e6fe6;--red:#e03e43;--line:#dedee3;--menuline:#dcdce2;--dots:#b4b4ba;--sect:#f0f0f4;--price:#55555b;--time:#6e6e73;--inbg:#f2f2f6;--inbd:#d0d0d8;--pillb:#e3edfc;--pillr:#fde4e5;--emp:#e1e1e6;--navicon:#6e6e73}}
 html{background:var(--bg)}
 *{box-sizing:border-box;margin:0;padding:0;font-family:"Roboto Condensed","Arial Narrow",Roboto,-apple-system,"Segoe UI",Helvetica,Arial,sans-serif;-webkit-tap-highlight-color:transparent;user-select:none}
 body{background:var(--bg);color:var(--tx);height:100dvh;display:flex;flex-direction:column;overflow:hidden}
@@ -40,7 +40,7 @@ body{background:var(--bg);color:var(--tx);height:100dvh;display:flex;flex-direct
 .summary-label{font-weight:700;white-space:nowrap}
 .summary-dots{flex:1;height:4px;margin:0 10px 4px;background:radial-gradient(circle,var(--dots) 1.3px,transparent 1.7px) 0 0/8px 4px repeat-x}
 .summary-value{font-weight:700;font-variant-numeric:tabular-nums;white-space:nowrap}
-.section-header{background:var(--sect);padding:7px 14px;display:flex;justify-content:space-between;color:var(--tx2);font-size:13.5px;font-weight:500}
+.section-header{background:var(--menu);padding:6px 14px;display:flex;justify-content:space-between;align-items:center;color:var(--tx2);font-size:17px;font-weight:600}
 .history-subtabs{display:flex}
 .history-subtab{flex:1;text-align:center;padding:15px 0 13px;font-size:16px;font-weight:500;color:var(--tx2);border-bottom:3px solid transparent;cursor:pointer;text-transform:uppercase}
 .history-subtab.active{color:var(--tx);border-bottom-color:var(--blue)}
@@ -71,7 +71,7 @@ body{background:var(--bg);color:var(--tx);height:100dvh;display:flex;flex-direct
 .pos-right{font-size:17px;font-weight:700;font-variant-numeric:tabular-nums;line-height:1.3;flex-shrink:0;text-align:right}
 .bottom-nav{height:calc(62px + env(safe-area-inset-bottom,0px));padding-bottom:env(safe-area-inset-bottom,0px);border-top:1px solid var(--line);display:flex;align-items:center;flex-shrink:0;padding:4px 0 6px}
 .nav-item{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;color:var(--tx);font-size:13px;font-weight:500;cursor:pointer;flex:1;position:relative}
-.nav-item svg{color:var(--tx2)}
+.nav-item svg{color:var(--navicon)}
 .nav-item.active,.nav-item.active svg{color:var(--blue)}
 .nav-badge-pill{background:var(--pillb);color:var(--blue);padding:2px 10px;border-radius:12px;font-size:15px;font-weight:600}
 .nav-badge-pill.neg{background:var(--pillr);color:var(--red)}
@@ -80,18 +80,25 @@ body{background:var(--bg);color:var(--tx);height:100dvh;display:flex;flex-direct
 .drawer-overlay.open{opacity:1;pointer-events:auto}
 .drawer{position:fixed;top:0;left:0;bottom:0;width:84%;max-width:340px;background:var(--drawer);z-index:100;transform:translateX(-100%);transition:transform .25s cubic-bezier(.2,.8,.2,1);display:flex;flex-direction:column;padding:calc(18px + env(safe-area-inset-top,0px)) 12px 20px;overflow-y:auto}
 .drawer.open{transform:none}
-.drawer-header{display:flex;gap:14px;padding:4px 8px 16px;border-bottom:1px solid var(--line)}
-.broker-logo{width:44px;height:44px;background:var(--jm);border-radius:8px;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:16px;letter-spacing:.4px;flex-shrink:0}
-.account-info{display:flex;flex-direction:column;gap:3px;overflow:hidden}
-.acc-name{font-size:16px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.acc-server{font-size:13px;color:var(--tx2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.manage-link{color:#4a90e2;font-size:14.5px;margin-top:8px;cursor:pointer}
-.drawer-menu{display:flex;flex-direction:column;gap:2px;margin-top:8px}
-.drawer-item{display:flex;align-items:center;justify-content:space-between;padding:11px 14px;border-radius:24px;font-size:14.5px;font-weight:500;cursor:pointer}
+.drawer-header{display:flex;gap:24px;padding:10px 6px 16px 14px;border-bottom:1px solid var(--line)}
+.broker-logo{width:38px;height:38px;background:#1f3cf5;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:22px;flex-shrink:0}
+.account-info{display:flex;flex-direction:column;gap:2px;overflow:hidden;flex:1;min-width:0;padding-right:46px}
+.acc-name{font-size:17px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.acc-server{font-size:16px;color:var(--tx2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.manage-link{color:#3d8bf0;font-size:17px;margin-top:10px;cursor:pointer}
+.drawer-menu{display:flex;flex-direction:column;gap:4px;margin-top:12px}
+.drawer-item{display:flex;align-items:center;justify-content:space-between;padding:0 14px 0 20px;min-height:43px;border-radius:24px;font-size:17px;font-weight:600;cursor:pointer}
+.drawer-item svg{width:26px;height:26px}
 .drawer-item.active{background:var(--pill)}
-.drawer-item-left{display:flex;align-items:center;gap:16px}
+.drawer-item-left{display:flex;align-items:center;gap:24px}
 .mail-badge{background:#e5484d;color:#fff;font-size:11px;font-weight:700;padding:2px 7px;border-radius:12px}
 .ads-pill{border:1px solid #3a4a63;color:#5b8ad6;font-size:11px;padding:1px 8px;border-radius:12px}
+.sheet-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:105;opacity:0;pointer-events:none;transition:opacity .2s}
+.sheet-backdrop.open{opacity:1;pointer-events:auto}
+.sheet{position:fixed;left:0;right:0;bottom:0;background:var(--menu);z-index:110;transform:translateY(100%);transition:transform .22s cubic-bezier(.2,.8,.2,1);padding:6px 0 calc(8px + env(safe-area-inset-bottom,0px))}
+.sheet.open{transform:none}
+.sheet div{height:51px;padding:0 18px;display:flex;align-items:center;font-family:Roboto,Arial,sans-serif;font-size:20px;color:var(--tx);cursor:pointer}
+.sheet div:first-child{cursor:default}
 .modal{position:fixed;inset:0;background:var(--bg);z-index:120;display:none;flex-direction:column;padding:20px;overflow-y:auto}
 .modal.open{display:flex}
 .modal-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;padding-bottom:12px;border-bottom:1px solid var(--line)}
@@ -115,7 +122,7 @@ body{background:var(--bg);color:var(--tx);height:100dvh;display:flex;flex-direct
   </div>
 
   <div class="topbar-actions" id="tradeActions">
-    <button class="icon-btn"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg></button>
+    <button class="icon-btn" onclick="openSheet()"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg></button>
     <button class="icon-btn"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M7 20V4M7 4L3 8M7 4L11 8M17 4V20M17 20L13 16M17 20L21 16"/></svg></button>
     <button class="icon-btn"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="15" y2="15"/></svg></button>
   </div>
@@ -182,7 +189,7 @@ body{background:var(--bg);color:var(--tx);height:100dvh;display:flex;flex-direct
     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M3.5 12a8.5 8.5 0 1 0 2.6-6.1"/><polyline points="3.5 3.5 3.5 8.5 8.5 8.5"/><polyline points="12 7.5 12 12 15.5 14"/></svg><span>History</span>
   </div>
   <div class="nav-item" onclick="switchTab('trade')">
-    <span class="msg-badge">2</span>
+    <span class="msg-badge">1</span>
     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg><span>Messages</span>
   </div>
 </nav>
@@ -190,19 +197,19 @@ body{background:var(--bg);color:var(--tx);height:100dvh;display:flex;flex-direct
 <div class="drawer-overlay" id="drawerOverlay" onclick="toggleDrawer(false)"></div>
 <aside class="drawer" id="sideDrawer">
   <div class="drawer-header">
-    <div class="broker-logo">JM</div>
+    <div class="broker-logo" id="brokerLogo">JM</div>
     <div class="account-info">
-      <div class="acc-name" id="drawerAccName">moustafa Sayed Mohamed</div>
+      <div class="acc-name" id="drawerAccName"></div>
       <div class="acc-server" id="drawerAccServer"></div>
       <div class="manage-link" onclick="openSettings()">Manage accounts</div>
     </div>
   </div>
   <div class="drawer-menu">
-    <div class="drawer-item active" onclick="switchTab('trade');toggleDrawer(false)"><div class="drawer-item-left"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 17 9 11 13 15 21 7"/></svg><span>Trade</span></div></div>
+    <div class="drawer-item active" onclick="switchTab('trade');toggleDrawer(false)"><div class="drawer-item-left"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"><polyline points="3 17 9 11 13 15 21 7"/><g fill="currentColor"><circle cx="3.5" cy="17" r="1.8"/><circle cx="9" cy="11" r="1.8"/><circle cx="13" cy="15" r="1.8"/><circle cx="20.5" cy="7.5" r="1.8"/></g></svg><span>Trade</span></div></div>
     <div class="drawer-item" onclick="toggleDrawer(false)"><div class="drawer-item-left"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="16" rx="2"/><line x1="7" y1="8" x2="17" y2="8"/><line x1="7" y1="12" x2="17" y2="12"/></svg><span>News</span></div></div>
-    <div class="drawer-item" onclick="toggleDrawer(false)"><div class="drawer-item-left"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2" y="4" width="20" height="16" rx="2"/><polyline points="22,6 12,13 2,6"/></svg><span>Mailbox</span></div><span class="mail-badge">7</span></div>
+    <div class="drawer-item" onclick="toggleDrawer(false)"><div class="drawer-item-left"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2" y="4" width="20" height="16" rx="2"/><polyline points="22,6 12,13 2,6"/></svg><span>Mailbox</span></div><span class="mail-badge">8</span></div>
     <div class="drawer-item" onclick="toggleDrawer(false)"><div class="drawer-item-left"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="4" y="3" width="16" height="18" rx="2"/><line x1="8" y1="8" x2="16" y2="8"/></svg><span>Journal</span></div></div>
-    <div class="drawer-item" onclick="openSettings()"><div class="drawer-item-left"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="3"/><circle cx="12" cy="12" r="8"/></svg><span>Settings</span></div></div>
+    <div class="drawer-item" onclick="openSettings()"><div class="drawer-item-left"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg><span>Settings</span></div></div>
     <div class="drawer-item" onclick="toggleDrawer(false)"><div class="drawer-item-left"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/></svg><span>Economic calendar</span></div><span class="ads-pill">Ads</span></div>
     <div class="drawer-item" onclick="toggleDrawer(false)"><div class="drawer-item-left"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="9" cy="7" r="3"/><circle cx="16" cy="11" r="2.5"/><path d="M4 19a5 5 0 0 1 10 0"/></svg><span>Traders Community</span></div></div>
     <div class="drawer-item" onclick="toggleDrawer(false)"><div class="drawer-item-left"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg><span>MQL5 Algo Trading</span></div></div>
@@ -211,6 +218,13 @@ body{background:var(--bg);color:var(--tx);height:100dvh;display:flex;flex-direct
   </div>
 </aside>
 
+<div class="sheet-backdrop" id="sheetBackdrop" onclick="closeSheet()"></div>
+<div class="sheet" id="balanceSheet">
+  <div>Balance</div>
+  <div onclick="closeSheet()">Deposit</div>
+  <div onclick="closeSheet()">Withdrawal</div>
+</div>
+
 <div class="modal" id="symbolModal">
   <div class="modal-header"><h3>Select Symbol</h3><button class="icon-btn" onclick="closeSymbolFilter()">✕</button></div>
   <div class="form-group"><label>Symbol Filter</label><select id="selSymbolFilter" onchange="onSymbolFilterChange()"><option value="ALL">All symbols</option></select></div>
@@ -218,15 +232,17 @@ body{background:var(--bg);color:var(--tx);height:100dvh;display:flex;flex-direct
 
 <div class="modal" id="settingsModal">
   <div class="modal-header"><h3>Account & Sync Settings</h3><button class="icon-btn" onclick="closeSettings()">✕</button></div>
-  <div class="form-group"><label>Account Name</label><input type="text" id="inpAccName" placeholder="moustafa Sayed Mohamed" /></div>
-  <div class="form-group"><label>Account Number & Server</label><input type="text" id="inpAccServer" placeholder="1200560142 - JustMarkets-Cent" /></div>
-  <div class="form-group"><label>Currency</label><input type="text" id="inpCurrency" placeholder="USC" /></div>
+  <div class="form-group"><label>Account Name</label><input type="text" id="inpAccName" placeholder="Client" /></div>
+  <div class="form-group"><label>Account Number & Server</label><input type="text" id="inpAccServer" placeholder="43233923 - Exness-MT5Real2" /></div>
+  <div class="form-group"><label>Currency (USD / USC ...)</label><input type="text" id="inpCurrency" placeholder="USC" /></div>
+  <div class="form-group"><label>Broker logo text</label><input type="text" id="inpLogoText" placeholder="JM" /></div>
+  <div class="form-group"><label>Broker logo color</label><input type="color" id="inpLogoColor" value="#1f3cf5" style="height:46px;padding:4px" /></div>
   <div class="form-group"><label>Firebase Database URL</label><input type="text" id="inpFirebaseUrl" placeholder="https://your-project.firebaseio.com" /></div>
   <button class="save-btn" onclick="saveSettings()">Save Changes</button>
 </div>
 
 <script>
-const iconSvg=`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><rect width="512" height="512" rx="110" fill="#121212"/><circle cx="256" cy="256" r="160" fill="none" stroke="#2b7de9" stroke-width="32"/><path d="M180 300 L230 220 L280 260 L340 180" fill="none" stroke="#1e6fe6" stroke-width="32" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+const iconSvg=`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><rect width="512" height="512" rx="110" fill="#121212"/><circle cx="256" cy="256" r="160" fill="none" stroke="#2b7de9" stroke-width="32"/><path d="M180 300 L230 220 L280 260 L340 180" fill="none" stroke="#ffcf01" stroke-width="32" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
 const mq=window.matchMedia("(prefers-color-scheme: light)");
 function applyTheme(){
   const bg=mq.matches?"#ffffff":"#000000";
@@ -236,10 +252,10 @@ function applyTheme(){
 applyTheme();(mq.addEventListener?mq.addEventListener("change",applyTheme):mq.addListener(applyTheme));
 document.getElementById("manifestLink").href="data:application/manifest+json;charset=utf-8,"+encodeURIComponent(JSON.stringify({name:"MetaTrader 5",short_name:"MetaTrader 5",start_url:location.href,display:"standalone",background_color:mq.matches?"#ffffff":"#000000",theme_color:mq.matches?"#ffffff":"#000000",icons:[{src:"data:image/svg+xml;base64,"+btoa(iconSvg),sizes:"512x512",type:"image/svg+xml"}]}));
 
-const defaultConfig={accName:"moustafa Sayed Mohamed",accServer:"1200560142 - JustMarkets-Cent",currency:"USC",firebaseUrl:"https://muastafa-default-rtdb.firebaseio.com"};
-let config=JSON.parse(localStorage.getItem("mt5_custom_config"))||defaultConfig;
+const defaultConfig={accName:"moustafa Sayed Mohamed",accServer:"1200560142 - JustMarkets-Demo",currency:"USC",demo:true,logoText:"JM",logoColor:"#1f3cf5",firebaseUrl:"https://muastafa-default-rtdb.firebaseio.com"};
+let config=Object.assign({},defaultConfig,JSON.parse(localStorage.getItem("mt5_custom_config")||"{}"));
+let acct={};
 if(!config.firebaseUrl)config.firebaseUrl=defaultConfig.firebaseUrl;
-if(!config.currency)config.currency=defaultConfig.currency;
 let activeTab="trade",historySubtab="positions",historyPeriod="today",symbolFilter="ALL";
 let latestData={balance:0,equity:0,margin:0,freeMargin:0,marginLevel:0,positions:[],history:[]};
 let historyCache=[],histFromNode=false,lastHistSig="";
@@ -290,7 +306,7 @@ function refreshHeader(){
   document.getElementById("historyActions").style.display=h?"flex":"none";
   document.getElementById("headerTitle").textContent=h?"History":"Trade";
   if(h){sub.className="title-sub-muted";sub.textContent=symbolFilter==="ALL"?"All symbols":symbolFilter;}
-  else{const p=Number(latestData.equity||0)-Number(latestData.balance||0);sub.textContent=`${p.toFixed(2)} ${config.currency}`;sub.className=`title-sub ${p<0?"profit-neg":"profit-pos"}`;}
+  else{const p=Number(latestData.equity||0)-Number(latestData.balance||0);sub.textContent=`${p.toFixed(2)} ${curr()}`;sub.className=`title-sub ${p<0?"profit-neg":"profit-pos"}`;}
 }
 function switchTab(tab){
   activeTab=tab;closePeriodDropdown();
@@ -334,21 +350,29 @@ function closeSymbolFilter(){document.getElementById("symbolModal").classList.re
 function onSymbolFilterChange(){symbolFilter=document.getElementById("selSymbolFilter").value;refreshHeader();closeSymbolFilter();renderHistory(latestData);}
 
 function applyConfig(){
-  document.getElementById("drawerAccName").textContent=config.accName;
-  document.getElementById("drawerAccServer").textContent=config.accServer;
+  const name=acct.name||config.accName,server=acct.login?`${acct.login} - ${acct.server||""}`:config.accServer;
+  document.getElementById("drawerAccName").textContent=name;
+  document.getElementById("drawerAccServer").textContent=server;
+  const lg=document.getElementById("brokerLogo");lg.textContent=config.logoText;lg.style.background=config.logoColor;
   document.getElementById("inpAccName").value=config.accName;
   document.getElementById("inpAccServer").value=config.accServer;
   document.getElementById("inpCurrency").value=config.currency;
+  document.getElementById("inpLogoText").value=config.logoText;
+  document.getElementById("inpLogoColor").value=config.logoColor;
   document.getElementById("inpFirebaseUrl").value=config.firebaseUrl;
-  refreshHeader();
 }
+const curr=()=>acct.currency||config.currency;
+function openSheet(){document.getElementById("balanceSheet").classList.add("open");document.getElementById("sheetBackdrop").classList.add("open");}
+function closeSheet(){document.getElementById("balanceSheet").classList.remove("open");document.getElementById("sheetBackdrop").classList.remove("open");}
 function toggleDrawer(o){document.getElementById("sideDrawer").classList.toggle("open",o);document.getElementById("drawerOverlay").classList.toggle("open",o);}
 function openSettings(){toggleDrawer(false);document.getElementById("settingsModal").classList.add("open");}
 function closeSettings(){document.getElementById("settingsModal").classList.remove("open");}
 function saveSettings(){
-  config.accName=document.getElementById("inpAccName").value.trim()||defaultConfig.accName;
+  config.accName=document.getElementById("inpAccName").value.trim()||"Client";
   config.accServer=document.getElementById("inpAccServer").value.trim()||defaultConfig.accServer;
-  config.currency=(document.getElementById("inpCurrency").value.trim()||defaultConfig.currency).toUpperCase();
+  config.currency=document.getElementById("inpCurrency").value.trim()||"USC";
+  config.logoText=document.getElementById("inpLogoText").value.trim()||"JM";
+  config.logoColor=document.getElementById("inpLogoColor").value;
   config.firebaseUrl=document.getElementById("inpFirebaseUrl").value.trim().replace(/\/$/,"");
   localStorage.setItem("mt5_custom_config",JSON.stringify(config));applyConfig();closeSettings();
 }
@@ -429,6 +453,7 @@ document.getElementById("historyView").addEventListener("scroll",function(){
 },{passive:true});
 
 function renderData(data){
+  if(data.login&&(acct.login!==data.login||acct.currency!==data.currency||acct.demo!==data.demo||acct.name!==data.name)){acct={login:data.login,server:data.server,name:data.name,currency:data.currency,demo:data.demo};applyConfig();refreshHeader();}
   if(!histFromNode&&Array.isArray(data.history)&&data.history.length)historyCache=data.history;
   data.history=historyCache;
   latestData=data;
@@ -440,7 +465,7 @@ function renderData(data){
   document.getElementById("valMarginLevel").textContent=formatNum(data.marginLevel);
   const pill=document.getElementById("navProfitPill");
   pill.textContent=profit.toFixed(2);pill.className=`nav-badge-pill ${profit<0?"neg":""}`;
-  if(activeTab==="trade"){const t=document.getElementById("topProfit");t.textContent=`${profit.toFixed(2)} ${config.currency}`;t.className=`title-sub ${profit<0?"profit-neg":"profit-pos"}`;}
+  if(activeTab==="trade"){const t=document.getElementById("topProfit");t.textContent=`${profit.toFixed(2)} ${curr()}`;t.className=`title-sub ${profit<0?"profit-neg":"profit-pos"}`;}
 
   const pos=data.positions||[],show=pos.length>0;
   document.getElementById("positionsHeader").style.display=show?"flex":"none";
